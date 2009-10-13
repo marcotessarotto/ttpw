@@ -1,11 +1,12 @@
 # Makefile for Sphinx documentation
 #
-
+export PYTHONPATH=../treetaggerwrapper:$PYTHONPATH
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
+
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
