@@ -1,45 +1,65 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-"""Python wrapper for TreeTagger.
+"""
+:mod:`treetaggerwrapper` -- Python wrapper for TreeTagger
+=========================================================
 
-For TreeTagger, see:
-U{http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html}
+:author: Laurent Pointal <laurent.pointal@limsi.fr> <laurent.pointal@laposte.net>
+:organization: CNRS - LIMSI
+:copyright: CNRS - 2004-2009
+:license: GNU-GPL Version 3 or greater
+:version: $Id$
+
+For TreeTagger, see `Helmut Schmid TreeTagger site`_.
+
+.. _Helmut Schmid TreeTagger site: http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html
 
 For this module, see:
 
- - Documentation as html: U{http://www.limsi.fr/Individu/pointal/python/treetaggerwrapper-doc/}
- - Project page: U{http://laurent.pointal.org/python/projets/treetaggerwrapper}
- - Recent source: U{http://www.limsi.fr/Individu/pointal/python/treetaggerwrapper.py}
+* `Project page`_
+* `Source documentation`_
+* `Source repository`_
+* `Recent source`_
 
-This wrapper tool is intended to be used into larger projects, where multiple
+.. _Project page: http://laurent.pointal.org/python/projets/treetaggerwrapper
+.. _Source documentation: http://www.limsi.fr/Individu/pointal/python/treetaggerwrapper-doc/
+.. _Source repository: https://sourcesup.cru.fr/scm/?group_id=647
+.. _Recent source: http://www.limsi.fr/Individu/pointal/python/treetaggerwrapper.py
+
+This wrapper tool is intended to be used in larger projects, where multiple
 chunk of texts must be processed via TreeTagger (else you may simply use the
 base TreeTagger installation as an external command).
 
 Installation
-============
+------------
+
 Simply put the module in a directory listed in the Python path.
 
-You must set up an environment variable B{C{TAGDIR}} to reference the
-TreeTagger installation directory (the one with bin, lib and cmd
-subdirectories).
-If you dont set up such a variable, you can give a C{TAGDIR} named argument
-when building a TreeTagger object to provide this information.
+You should set up an environment variable :envvar:`TAGDIR` to reference the
+TreeTagger software installation directory (the one with :file:`bin`, :file:`lib`
+and :file:`cmd` subdirectories).
+If you dont set up such a variable, you can give a `TAGDIR` named argument
+when building a :class:`TreeTagger` object to provide this information.
+
+..
+    Check epydoc syntax, docformat changed.
 
 To build the documentation with epydoc::
+
     epydoc --html -o treetaggerwrapper-doc --docformat epytext --name treetaggerwrapper treetaggerwrapper.py
 
 Usage
-=====
-Example::
-    import treetaggerwrapper
-    #1) build a TreeTagger wrapper:
-    tagger = treetaggerwrapper.TreeTagger(TAGLANG='en',TAGDIR='~/TreeTagger')
-    #2) tag your text.
-    tags = tagger.TagText("This is a very short text to tag.")
-    #3) use the tags list... (list of string output from TreeTagger).
-    print tags
+-----
 
-Result::
+Example::
+
+    >>> import treetaggerwrapper
+    >>> #1) build a TreeTagger wrapper:
+    >>> tagger = treetaggerwrapper.TreeTagger(TAGLANG='en',TAGDIR='~/TreeTagger')
+    >>> #2) tag your text.
+    >>> tags = tagger.TagText("This is a very short text to tag.")
+    >>> #3) use the tags list... (list of string output from TreeTagger).
+    >>> print tags
     ['This\tDT\tthis',
      'is\tVBZ\tbe',
      'a\tDT\ta',
@@ -52,34 +72,35 @@ Result::
 
 The module can be used as a command line tool too, for more information
 ask for module help::
+
     python treetaggerwrapper.py --help
 
 
 Processing
-==========
+----------
 
 Encoding
---------
+~~~~~~~~
 
-By default files and C{str} strings are considered to be using latin1 encoding.
+By default files and `str` strings are considered to be using latin1 encoding.
 
- - You can specify the encoding when using the script as a command-line tool,
-   with the C{-e} param (see online help).
+- You can specify the encoding when using the script as a command-line tool,
+   with the :option:`-e` param (see online help).
 
- - When using the script as an embedded tool into a larger project, you can use
-   different parameter types as L{TreeTagger.TagText()} C{text} parameter.
+- When using the script as an embedded tool into a larger project, you can use
+  different parameter types as :meth:`TreeTagger.TagText` `text` parameter.
 
-    - You can use unicode strings, and TagText() will return list of unicode
-      strings. If you fill'in TagText with a list of strings and dont provide
-      and C{encoding} parameter, TagText will also return unicode strings
-      (same if you set C{encoding} to C{unicode} or C{\"unicode\"}).
-    - You can use C{str} strings and specify an alternate C{encoding} (and an alternate
-      C{errors} detection), and TagText() will automatically convert input from this
-      encoding and output to this encoding.
+  - You can use unicode strings, and :meth:`TagText` will return list of unicode
+    strings. If you fill'in TagText with a list of strings and dont provide
+    and `encoding` parameter, TagText will also return unicode strings
+    (same if you set `encoding` to `unicode` or `"unicode"`.
+  - You can use `str` strings and specify an alternate `encoding` (and an alternate
+    `errors` detection), and TagText() will automatically convert input from this
+    encoding and output to this encoding.
 
 
-This module do two main things
-------------------------------
+This module does two main things
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Manage preprocessing of text in place of external Perl scripts as in
   base TreeTagger installation, thus avoid starting Perl each time a chunk
@@ -91,16 +112,16 @@ This module do two main things
 Use of pipes avoid writing/reading temporary files on disk too.
 
 Other things done by this module
---------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    - Can number lines into XML tags (to identify lines after TreeTagger
-      processing).
-    - Can mark whitespaces with XML tags.
-    - By default replace non-talk parts like URLs, emails, IP addresses,
-      DNS names (can be turned off). Replaced by a 'replaced-xxx' string
-      followed by an XML tag containing the replaced text as attribute.
-    - Acronyms like U.S.A. are systematically written with a final dot,
-      even if it is missing in original file.
+- Can number lines into XML tags (to identify lines after TreeTagger
+  processing).
+- Can mark whitespaces with XML tags.
+- By default replace non-talk parts like URLs, emails, IP addresses,
+  DNS names (can be turned off). Replaced by a 'replaced-xxx' string
+  followed by an XML tag containing the replaced text as attribute.
+- Acronyms like U.S.A. are systematically written with a final dot,
+  even if it is missing in original file.
 
 
 In normal mode, all journal outputs are done via Python standard logging system,
@@ -109,82 +130,155 @@ results goes to stdout), or b) you set DEBUG or DEBUG_PREPROCESS global
 variables and you use the module directly on command line (which make journal
 and other traces to be sent to stdout).
 
-For an example of logging use, see L{enable_debugging_log()} function.
+For an example of logging use, see :func:`enable_debugging_log` function.
 
-@note: Some non-exported functions and globals can be nice to use in other
-       contexts:
-       L{SGML_tag}, L{SGML_tag_re}, L{IsSGMLTag}, L{SplitSGML},
-       L{Ip_expression}, L{IpMatch_re}, L{DnsHost_expression},
-       L{DnsHostMatch_re}, L{UrlMatch_expression}, L{UrlMatch_re},
-       L{EmailMatch_expression}, L{EmailMatch_re}.
-@author: Laurent Pointal <laurent.pointal@limsi.fr> <laurent.pointal@laposte.net>
-@organization: CNRS - LIMSI
-@copyright: CNRS - 2004-2009
-@license: GNU-GPL Version 3 or greater
-@version: $Id$
-@var DEBUG: global to set to enable debugging code (mainly logs).
-@type DEBUG: boolean
-@var DEBUG_PREPROCESS: global to set to enable preprocessing specific
-                       debugging code.
-@type DEBUG_PREPROCESS: boolean
-@var logger: logging Logger object for this module.
-@var STARTOFTEXT: tag to identify begin of a text in the data flow.
-@type STARTOFTEXT: string
-@var ENDOFTEXT: tag to identify end of a text in the data flow.
-@type ENDOFTEXT: string
-@var NUMBEROFLINE: tag to identify line numbers from source text.
-@type NUMBEROFLINE: string
-@var TAGSPACE: tag to identify spaces in output.
-@type TAGSPACE: string
-@var TAGTAB: tag to identify horizontal tabulations in output.
-@type TAGTAB: string
-@var TAGLF: tag to identify line feeds in output.
-@type TAGLF: string
-@var TAGCR: tag to identify carriage returns in output.
-@type TAGCR: string
-@var TAGVT: tag to identify vertical tabulations in output.
-@type TAGVT: string
-@var TAGFF: tag to identify form feeds in output.
-@type TAGFF: string
-@var TREETAGGER_ENCODING: in/out encoding for TreeTagger (latin1).
-@type TREETAGGER_ENCODING: str
-@var TREETAGGER_INENCERR: management of encoding errors fot TT input (replace).
-@type TREETAGGER_INENCERR: str
-@var TREETAGGER_OUTENCERR: management of decoding errors of TT output (replace).
-@type TREETAGGER_OUTENCERR: str
-@var USER_ENCODING: default input and output for files and strings with no
-                    encoding specified (latin1).
-@type USER_ENCODING: latin1
-@var DEFAULT_ENCERRORS: error processing for user data encoding/decoding (strict).
-@type DEFAULT_ENCERRORS: str
-@var alonemarks: string containing chars which must be kept alone (this string
-                 is used in regular expressions inside square brackets parts).
-@type alonemarks: string
-@var g_langsupport: dictionnary with data for each usable langage.
-@type g_langsupport: dict [langage] ==> dict of data
-@var SGML_name: regular expression string for XML names
-@type SGML_name: string
-@var SGML_tag: regular expression string to match XML tags.
-@type SGML_tag: string
-@var SGML_tag_re: regular expression object to match XML tags.
-@type SGML_tag_re: SRE_Pattern
-@var Ip_expression: regular expression string to match IP addresses.
-@type Ip_expression: string
-@var IpMatch_re: regular expression object to match IP addresses.
-@type IpMatch_re: SRE_Pattern
-@var DnsHost_expression: regular expression string to match DNS names.
-@type DnsHost_expression: string
-@var DnsHostMatch_re: regular expression object to match DNS names.
-@type DnsHostMatch_re: SRE_Pattern
-@var UrlMatch_expression: regular expression string to match URLs.
-@type UrlMatch_expression: string
-@var UrlMatch_re: regular expression object to match URLs.
-@type UrlMatch_re: SRE_Pattern
-@var EmailMatch_expression: regular expression string to match email addresses.
-@type EmailMatch_expression: string
-@var EmailMatch_re: regular expression object to match email addresses.
-@type EmailMatch_re: SRE_Pattern
+.. note::
+
+    Some non-exported functions and globals can be nice to use in other
+    contexts:
+    :data:`SGML_tag`, :func:`IsSGMLTag`, :func:`SplitSGML`,
+    :data:`Ip_expression`, :data:`DnsHost_expression`,
+    :data:`UrlMatch_expression`, :data:`EmailMatch_expression`,
+    :func:`PipeWriter`.
+
+Module globals and constants
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. data:: DEBUG(boolean)
+
+    Set to enable debugging code (mainly logs).
+
+.. data:: DEBUG_PREPROCESS(boolean)
+
+    Set to enable preprocessing specific debugging code.
+
+.. data:: RESEXT(string)
+
+    Extension added to result files when using command-line ('ttr').
+
+.. data:: logger(logging.Logger)
+
+    Logger object for this module.
+
+.. data:: STARTOFTEXT(string)
+
+    Tag to identify begin of a text in the data flow.
+
+.. data:: ENDOFTEXT(string)
+
+    Tag to identify end of a text in the data flow.
+
+.. data:: NUMBEROFLINE(string)
+
+    Tag to identify line numbers from source text.
+
+.. data:: TAGSPACE(string)
+
+    Tag to identify spaces in output.
+
+.. data:: TAGTAB(string)
+
+    Tag to identify horizontal tabulations in output.
+
+.. data:: TAGLF(string)
+
+    Tag to identify line feeds in output.
+
+.. data:: TAGCR(string)
+
+    Tag to identify carriage returns in output.
+
+.. data:: TAGVT(string)
+
+    Tag to identify vertical tabulations in output.
+
+.. data:: TAGFF(string)
+
+    Tag to identify form feeds in output.
+
+.. data:: TREETAGGER_ENCODING(string)
+
+    In/out encoding for TreeTagger (latin1).
+
+.. data:: TREETAGGER_INENCERR(str)
+
+    Management of encoding errors fot TT input (replace).
+
+.. data:: TREETAGGER_OUTENCERR(str)
+
+    Management of decoding errors of TT output (replace).
+
+.. data:: USER_ENCODING(str)
+
+    Default input and output for files and strings with no
+    encoding specified (latin1).
+
+.. data:: DEFAULT_ENCERRORS(str)
+
+    Error processing for user data encoding/decoding (strict).
+
+.. data:: alonemarks(string)
+
+    String containing chars which must be kept alone (this string
+    is used in regular expressions inside square brackets parts).
+
+.. data:: g_langsupport(dict)
+
+    Dictionnary with data for each usable langage.
+
+    g_langsupport[langage] ==> dict of data
+
+.. data:: SGML_name(string)
+
+    Regular expression string for XML names.
+
+.. data:: SGML_tag(string)
+
+    Regular expression string to match XML tags.
+
+.. data:: SGML_tag_re(re.SRE_Pattern)
+
+    Regular expression object to match XML tags.
+
+.. data:: Ip_expression(string)
+
+    Regular expression string to match IP addresses.
+
+.. data:: IpMatch_re(re.SRE_Pattern)
+
+    Regular expression object to match IP addresses.
+
+.. data:: DnsHost_expression(string)
+
+    Regular expression string to match DNS names.
+
+.. data:: DnsHostMatch_re(re.SRE_Pattern)
+
+    Regular expression object to match DNS names.
+
+.. data:: UrlMatch_expression(string)
+
+    Regular expression string to match URLs.
+
+.. data:: UrlMatch_re(re.SRE_Pattern)
+
+    Regular expression object to match URLs.
+
+.. data:: EmailMatch_expression(string)
+
+    Regular expression string to match email addresses.
+
+.. data:: EmailMatch_re(re.SRE_Pattern)
+
+    Regular expression object to match email addresses.
+
+Module class, functions and exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 """
+# To allow use of epydoc documentation generation with reStructuredText markup.
+__docformat__ = "restructuredtext en"
+
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
 #       semantic groups of things in the expression but no submatch group
@@ -395,17 +489,17 @@ def PipeWriter(pipe,text,flushsequence,encoding=TREETAGGER_ENCODING,
     ad-hoc encoding is providen by caller). If it is composed of unicode
     strings, then they are converted to the specified encoding.
 
-    @param  pipe: the pipe on what to write the text.
-    @type   pipe: pipe object (file-like with write and flush methods)
-    @param  text: the text to write.
-    @type   text: string or list of strings
-    @param  flushsequence: lines of tokens to ensure flush by TreeTagger.
-    @type   flushsequence: string (with \n between tokens)
-    @param  encoding: encoding of texts written on the pipe.
-    @type   encoding: str
-    @param  errors: how to manage encoding errors: strict/ignore/replace,
+    :param  pipe: the pipe on what to write the text.
+    :type   pipe: pipe object (file-like with write and flush methods)
+    :param  text: the text to write.
+    :type   text: string or list of strings
+    :param  flushsequence: lines of tokens to ensure flush by TreeTagger.
+    :type   flushsequence: string (with \n between tokens)
+    :param  encoding: encoding of texts written on the pipe.
+    :type   encoding: str
+    :param  errors: how to manage encoding errors: strict/ignore/replace,
                     default to strict as Python standard.
-    @type  errors: str
+    :type  errors: str
     """
     try :
         # Warn the user of possible bad usage.
@@ -454,126 +548,127 @@ class TreeTagger (object) :
     and the L{TagText()} method to process your data and get TreeTagger
     output results.
 
-    @ivar   lang: langage supported by this tagger ('en', 'fr'...).
-    @type   lang: string
-    @ivar   langsupport: dictionnary of langage specific values (ref. to
-                         g_langsupport[lang] dictionnary).
-    @type   langsupport: dict
-    @ivar   tagdir: path to directory of installation of TreeTagger.
+    :ivar   lang: langage supported by this tagger ('en', 'fr', 'de', 'es).
+    :type   lang: string
+    :ivar   langsupport: dictionnary of langage specific values (ref. to
+                        g_langsupport[lang] dictionnary).
+    :type   langsupport: dict
+    :ivar   tagdir: path to directory of installation of TreeTagger.
                     Set via TAGDIR env. var or construction param.
-    @type   tagdir: string
-    @ivar   tagbindir: path to binary dir into TreeTagger dir.
-    @type   tagbindir: string
-    @ivar   tagcmddir: path to commands dir into TreeTagger dir.
-    @type   tagcmddir: string
-    @ivar   taglibdir: path to libraries dir into TreeTagger dir.
-    @type   taglibdir: string
-    @ivar   tagbin: path to TreeTagger binary file (used to launch process).
-    @type   tagbin: string
-    @ivar   tagopt: command line options for TreeTagger.
-    @type   tagopt: string
-    @ivar   tagparfile: path to TreeTagger library file.
-    @type   tagparfile: string
-    @ivar   abbrevfile: path to abbreviations file.
-    @type   abbrevfile: string
-    @ivar   taginencoding: encoding to use for TreeTagger input encoding.
-    @type   taginencoding: str
-    @ivar   tagoutencoding: encoding to use for TreeTagger output decoding.
-    @type   tagoutencoding: str
-    @ivar   taginencerr: management of encoding errors for TreeTagger input.
-    @type   taginencerr: str
-    @ivar   tagoutencerr: management of encoding errors for TreeTagger output.
-    @type   tagoutencerr: str
-    @ivar   abbterms: dictionnary of abbreviation terms for fast lookup.
-                      Filled when reading abbreviations file.
-    @type   abbterms: dict  [ form ] ==> term
-    @ivar   pchar: characters which have to be cut off at the beginning of
-                   a word.
-                   Filled from g_langsupport dict.
-    @type   pchar: string
-    @ivar   pchar_re: regular expression object to cut-off such chars.
-    @type   pchar_re: SRE_Pattern
-    @ivar   fchar: characters which have to be cut off at the end of a word.
-                   Filled from g_langsupport dict.
-    @type   fchar: string
-    @ivar   fchar_re: regular expression object to cut-off such chars.
-    @type   fchar_re: SRE_Pattern
-    @ivar   pclictic: character sequences which have to be cut off at the
-                      beginning of a word.
-                      Filled from g_langsupport dict.
-    @type   pclictic: string
-    @ivar   pclictic_re: regular expression object to cut-off pclictic
-                         sequences.
-    @type   pclictic_re: SRE_Pattern
-    @ivar   fclictic: character sequences which have to be cut off at the end
-                      of a word.
-                      Filled from g_langsupport dict.
-    @type   fclictic: string
-    @ivar   fclictic_re: regular expression object to cut-off fclictic
-                         sequences.
-    @type   fclictic_re: SRE_Pattern
-    @ivar   number: regular expression of number recognition for the langage.
+    :type   tagdir: string
+    :ivar   tagbindir: path to binary dir into TreeTagger dir.
+    :type   tagbindir: string
+    :ivar   tagcmddir: path to commands dir into TreeTagger dir.
+    :type   tagcmddir: string
+    :ivar   taglibdir: path to libraries dir into TreeTagger dir.
+    :type   taglibdir: string
+    :ivar   tagbin: path to TreeTagger binary file (used to launch process).
+    :type   tagbin: string
+    :ivar   tagopt: command line options for TreeTagger.
+    :type   tagopt: string
+    :ivar   tagparfile: path to TreeTagger library file.
+    :type   tagparfile: string
+    :ivar   abbrevfile: path to abbreviations file.
+    :type   abbrevfile: string
+    :ivar   taginencoding: encoding to use for TreeTagger input encoding.
+    :type   taginencoding: str
+    :ivar   tagoutencoding: encoding to use for TreeTagger output decoding.
+    :type   tagoutencoding: str
+    :ivar   taginencerr: management of encoding errors for TreeTagger input.
+    :type   taginencerr: str
+    :ivar   tagoutencerr: management of encoding errors for TreeTagger output.
+    :type   tagoutencerr: str
+    :ivar   abbterms: dictionnary of abbreviation terms for fast lookup.
+                    Filled when reading abbreviations file.
+    :type   abbterms: dict  [ form ] ==> term
+    :ivar   pchar: characters which have to be cut off at the beginning of
+                a word.
+                Filled from g_langsupport dict.
+    :type   pchar: string
+    :ivar   pchar_re: regular expression object to cut-off such chars.
+    :type   pchar_re: SRE_Pattern
+    :ivar   fchar: characters which have to be cut off at the end of a word.
+                Filled from g_langsupport dict.
+    :type   fchar: string
+    :ivar   fchar_re: regular expression object to cut-off such chars.
+    :type   fchar_re: SRE_Pattern
+    :ivar   pclictic: character sequences which have to be cut off at the
+                    beginning of a word.
                     Filled from g_langsupport dict.
-    @type   number: string
-    @ivar   number_re: regular expression object to identify numbers.
-    @type   number_re: SRE_Pattern
-    @ivar   dummysequence: just a small but complete sentence in the langage.
-                           Filled from g_langsupport dict.
-    @type   dummysequence: string
-    @ivar   replurlexp: regular expression subtitution string for URLs.
-    @type   replurlexp: string
-    @ivar   replemailexp: regular expression subtitution string for emails.
-    @type   replemailexp: string
-    @ivar   replipexp: regular expression subtitution string for IP addresses.
-    @type   replipexp: string
-    @ivar   repldnsexp: regular expression subtitution string for DNS names.
-    @type   repldnsexp: string
-    @ivar   taginput: pipe to write to TreeTagger input. Set whe opening pipe.
-    @type   taginput: write stream
-    @ivar   tagoutput: pipe to read from TreeTagger input. Set whe opening
-                       pipe.
-    @type   tagoutput: read stream
+    :type   pclictic: string
+    :ivar   pclictic_re: regular expression object to cut-off pclictic
+                        sequences.
+    :type   pclictic_re: SRE_Pattern
+    :ivar   fclictic: character sequences which have to be cut off at the end
+                    of a word.
+                    Filled from g_langsupport dict.
+    :type   fclictic: string
+    :ivar   fclictic_re: regular expression object to cut-off fclictic
+                        sequences.
+    :type   fclictic_re: SRE_Pattern
+    :ivar   number: regular expression of number recognition for the langage.
+                    Filled from g_langsupport dict.
+    :type   number: string
+    :ivar   number_re: regular expression object to identify numbers.
+    :type   number_re: SRE_Pattern
+    :ivar   dummysequence: just a small but complete sentence in the langage.
+                        Filled from g_langsupport dict.
+    :type   dummysequence: string
+    :ivar   replurlexp: regular expression subtitution string for URLs.
+    :type   replurlexp: string
+    :ivar   replemailexp: regular expression subtitution string for emails.
+    :type   replemailexp: string
+    :ivar   replipexp: regular expression subtitution string for IP addresses.
+    :type   replipexp: string
+    :ivar   repldnsexp: regular expression subtitution string for DNS names.
+    :type   repldnsexp: string
+    :ivar   taginput: pipe to write to TreeTagger input. Set whe opening pipe.
+    :type   taginput: write stream
+    :ivar   tagoutput: pipe to read from TreeTagger input. Set whe opening
+                    pipe.
+    :type   tagoutput: read stream
     """
     #--------------------------------------------------------------------------
     def __init__ (self,**kargs) :
-        """Construction of a wrapper for a TreeTagger process.
+        """
+        Construction of a wrapper for a TreeTagger process.
 
         You can specify several parameters at construction time.
         These parameters can be set via environment variables too.
         Most of them have default values.
 
-        @keyword TAGLANG: langage code for texts ('en','fr',...)
+        :keyword TAGLANG: langage code for texts ('en','fr',...)
                           (default to 'en').
-        @type   TAGLANG: string
-        @keyword  TAGDIR: path to TreeTagger installation directory
+        :type   TAGLANG: string
+        :keyword  TAGDIR: path to TreeTagger installation directory
                           (optionnal but highly recommended).
-        @type   TAGDIR: string
-        @keyword  TAGOPT: options for TreeTagger
+        :type   TAGDIR: string
+        :keyword  TAGOPT: options for TreeTagger
                           (default to '-token -lemma -sgml -quiet').
-        @type   TAGOPT: string
-        @keyword  TAGPARFILE: parameter file for TreeTagger.
+        :type   TAGOPT: string
+        :keyword  TAGPARFILE: parameter file for TreeTagger.
                               (default available for supported langages).
                               Use value None to force use of default if
                               environment variable define a value you dont wants
                               to use.
-        @type   TAGPARFILE: string
-        @keyword  TAGABBREV: abbreviation file for preprocessing.
+        :type   TAGPARFILE: string
+        :keyword  TAGABBREV: abbreviation file for preprocessing.
                              (default available for supported langages).
-        @type   TAGABBREV: string
-        @keyword TAGINENC: encoding to use for TreeTagger input, default
+        :type   TAGABBREV: string
+        :keyword TAGINENC: encoding to use for TreeTagger input, default
                            to latin1.
-        @type TAGINENC:    str
-        @keyword TAGOUTENC: encoding to use for TreeTagger output, default
+        :type TAGINENC:    str
+        :keyword TAGOUTENC: encoding to use for TreeTagger output, default
                             to latin1
-        @type TAGOUTENC:    str
-        @keyword TAGINENCERR: management of encoding errors for TreeTagger
+        :type TAGOUTENC:    str
+        :keyword TAGINENCERR: management of encoding errors for TreeTagger
                               input, strict or ignore or replace -
                               default to replace.
-        @type TAGINENCERR:    str
-        @keyword TAGOUTENCERR: management of encoding errors for TreeTagger
+        :type TAGINENCERR:    str
+        :keyword TAGOUTENCERR: management of encoding errors for TreeTagger
                                output, strict or ignore or replace -
                                default to replace.
-        @type TAGOUTENCERR:    str
+        :type TAGOUTENCERR:    str
         """
         # Get data in different place, setup context for preprocessing and
         # processing.
@@ -857,45 +952,45 @@ class TreeTagger (object) :
         This is normally the method you use on this class. Other methods
         are only helpers of this one.
 
-        @param  text: the text to tag.
-        @type   text: string   /   [ string ]
-        @param  numlines: indicator to keep line numbering information in
+        :param  text: the text to tag.
+        :type   text: string   /   [ string ]
+        :param  numlines: indicator to keep line numbering information in
                           data flow (done via SGML tags) (default to False).
-        @type   numlines: boolean
-        @param  tagonly: indicator to only do TreeTagger tagging processing
+        :type   numlines: boolean
+        :param  tagonly: indicator to only do TreeTagger tagging processing
                          on input (default to False).
-        @type   tagonly: boolesn
-        @param  prepronly: indicator to only do preprocessing of text without
+        :type   tagonly: boolesn
+        :param  prepronly: indicator to only do preprocessing of text without
                            tagging (default to False).
-        @type   prepronly: boolean
-        @param  tagblanks: indicator to keep blanks characters information in
+        :type   prepronly: boolean
+        :param  tagblanks: indicator to keep blanks characters information in
                            data flow (done via SGML tags) (default to False).
-        @type   tagblanks: boolean
-        @param  notagurl: indicator to not do URL replacement (default to False).
-        @type   notagurl: boolean
-        @param  notagemail: indicator to not do email address replacement
+        :type   tagblanks: boolean
+        :param  notagurl: indicator to not do URL replacement (default to False).
+        :type   notagurl: boolean
+        :param  notagemail: indicator to not do email address replacement
                             (default to False).
-        @type   notagemail: boolean
-        @param  notagip: indicator to not do IP address replacement (default
+        :type   notagemail: boolean
+        :param  notagip: indicator to not do IP address replacement (default
                          to False).
-        @type   notagip: boolean
-        @param  notagdns: indicator to not do DNS names replacement (default
+        :type   notagip: boolean
+        :param  notagdns: indicator to not do DNS names replacement (default
                           to False).
-        @type   notagdns: boolean
-        @param encoding: encoding of input data (default to latin1 for C{str}
+        :type   notagdns: boolean
+        :param encoding: encoding of input data (default to latin1 for C{str}
                          text and unicode for C{unicode} text), usable values
                          are standard encodings + C{"unicode"} and C{unicode}
                          type.
                          Mandatory if text is a C{list} or C{tuple} of
                          strings.
-        @type encoding: C{str}
-        @param errors: indicator how to manage encoding/decoding errors for
+        :type encoding: C{str}
+        :param errors: indicator how to manage encoding/decoding errors for
                        your data, can be strict / replace / ignore (default
                        to strict).
-        @type errors: C{str}
-        @return: List of output lines from the tagger, unicode or str
+        :type errors: C{str}
+        :return: List of output lines from the tagger, unicode or str
                  strings.
-        @rtype:  [ string ]
+        :rtype:  [ string ]
         """
         # Check for incompatible options.
         if (tagblanks or numlines) and self.removesgml :
@@ -979,25 +1074,25 @@ class TreeTagger (object) :
                 notagemail,notagip,notagdns) :
         """Prepare a text for processing by TreeTagger.
 
-        @param  text: the text to split into base elements.
-        @type   text: unicode   /   [ unicode ]
-        @param  tagblanks: transform blanks chars into SGML tags.
-        @type   tagblanks: boolean
-        @param  numlines: indicator to pur tag for line numbering.
-        @type   numlines: boolean
-        @param  notagurl: indicator to not do URL replacement (default to False).
-        @type   notagurl: boolean
-        @param  notagemail: indicator to not do email address replacement
+        :param  text: the text to split into base elements.
+        :type   text: unicode   /   [ unicode ]
+        :param  tagblanks: transform blanks chars into SGML tags.
+        :type   tagblanks: boolean
+        :param  numlines: indicator to pur tag for line numbering.
+        :type   numlines: boolean
+        :param  notagurl: indicator to not do URL replacement (default to False).
+        :type   notagurl: boolean
+        :param  notagemail: indicator to not do email address replacement
                             (default to False).
-        @type   notagemail: boolean
-        @param  notagip: indicator to not do IP address replacement (default
+        :type   notagemail: boolean
+        :param  notagip: indicator to not do IP address replacement (default
                          to False).
-        @type   notagip: boolean
-        @param  notagdns: indicator to not do DNS names replacement (default
+        :type   notagip: boolean
+        :param  notagdns: indicator to not do DNS names replacement (default
                           to False).
-        @type   notagdns: boolean
-        @return: List of lines to process as TreeTagger input (no \\n at end of line).
-        @rtype: [ unicode ]
+        :type   notagdns: boolean
+        :return: List of lines to process as TreeTagger input (no \\n at end of line).
+        :rtype: [ unicode ]
         """
         logger.debug("Preparing text for tagger (tagblanks=%d, "\
                     "numlines=%d).",tagblanks,numlines)
@@ -1123,10 +1218,10 @@ class TreeTagger (object) :
 
         Prepare non-SGML text parts.
 
-        @param  text: unicode text of part to process.
-        @type   text: unicode
-        @return: List of lines to process as TreeTagger input.
-        @rtype: [ unicode ]
+        :param  text: unicode text of part to process.
+        :type   text: unicode
+        :return: List of lines to process as TreeTagger input.
+        :rtype: [ unicode ]
         """
         # May occur when recursively calling after splitting on dot, if there
         # are two consecutive dots.
@@ -1302,10 +1397,10 @@ SGML_tag_re = re.compile(SGML_tag,re.IGNORECASE|re.VERBOSE|re.DOTALL)
 def IsSGMLTag(text) :
     """Test if a text is - completly - a SGML tag.
 
-    @param  text: the text to test.
-    @type  text: string
-    @return: True if its an SGML tag.
-    @rtype: boolean
+    :param  text: the text to test.
+    :type  text: string
+    :return: True if its an SGML tag.
+    :rtype: boolean
     """
     return SGML_tag_re.match(text)
 
@@ -1314,10 +1409,10 @@ def IsSGMLTag(text) :
 def SplitSGML(text) :
     """Split a text between SGML-tags and non-SGML-tags parts.
 
-    @param  text: the text to split.
-    @type  text: string
-    @return: List of parts in their apparition order.
-    @rtype: list of string.
+    :param  text: the text to split.
+    :type  text: string
+    :return: List of parts in their apparition order.
+    :rtype: list of string.
     """
     # Simply split on XML tags recognized by regular expression.
     return SGML_tag_re.split(text)
@@ -1329,10 +1424,10 @@ BlankToTag_tags = [(u' ',TAGSPACE),(u'\t',TAGTAB),(u'\n',TAGLF),
 def BlankToTag(text) :
     """Replace blanks characters by corresponding SGML tags.
 
-    @param  text: the text to transform from blanks.
-    @type  text: string
-    @return: Text with replacement done.
-    @rtype: string.
+    :param  text: the text to transform from blanks.
+    :type  text: string
+    :return: Text with replacement done.
+    :rtype: string.
     """
     for c,r in BlankToTag_tags :
         text = text.replace(c,r)
@@ -1343,14 +1438,14 @@ def BlankToTag(text) :
 def maketransU(s1, s2, todel=u""):
     """Build translation table for use with unicode.translate().
 
-    @param s1: string of characters to replace.
-    @type s1: unicode
-    @param s2: string of replacement characters (same order as in s1).
-    @type s2: unicode
-    @param todel: string of characters to remove.
-    @type todel: unicode
-    @return: translation table with character code -> character code.
-    @rtype: dict
+    :param s1: string of characters to replace.
+    :type s1: unicode
+    :param s2: string of replacement characters (same order as in s1).
+    :type s2: unicode
+    :param todel: string of characters to remove.
+    :type todel: unicode
+    :return: translation table with character code -> character code.
+    :rtype: dict
     """
     # We go unicode internally - ensure callers are ok with that.
     assert (isinstance(s1,unicode))
@@ -1366,10 +1461,10 @@ def BlankToSpace(text) :
 
     May be good to prepare for regular expressions & Co based on whitespaces.
 
-    @param  text: the text to clean from blanks.
-    @type  text: string
-    @return: List of parts in their apparition order.
-    @rtype: [ string ]
+    :param  text: the text to clean from blanks.
+    :type  text: string
+    :return: List of parts in their apparition order.
+    :rtype: [ string ]
     """
     return text.translate(BlankToSpace_table)
 
@@ -1410,6 +1505,9 @@ IpMatch_re = re.compile(ur"("+Ip_expression+")",
 
 
 #==============================================================================
+# Yes, I know, should not fix top level domains here... and accept any TLD.
+# But this help to avoid mathcing a domain name with just x.y strings.
+# If needed, fill a bug with a missing TLD to add.
 DnsHost_expression = ur"""
         (?:
             [-a-z0-9]+\.                # Host name
