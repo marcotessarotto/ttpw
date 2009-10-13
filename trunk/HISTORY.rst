@@ -22,3 +22,7 @@ and to fix -d option misstyping in getopt.
 2005-09-29
 Added support for darwin on the request of (and with tests from)
 Mauro Cherubini.
+
+2005
+Initial version built for Nadia Djebli and Saber Aloui training at LIMSI.
+
