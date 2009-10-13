@@ -38,7 +38,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'TreeTagger Python Wrapper'
-copyright = u'2009, Laurent Pointal'
+copyright = u'2004-2009, CNRS - LIMSI, by Laurent Pointal'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
