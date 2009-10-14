@@ -18,8 +18,12 @@ For this module, see:
 
 * `Project page`_
 * `Source documentation`_
-* `Source repository`_
+* `Source repository`_ 
 * `Recent source`_
+
+  You can also retrieve the latest version of this module with the svn command::
+   
+      svn export https://subversion.cru.fr/ttpw/trunk/treetaggerwrapper/treetaggerwrapper.py
 
 .. _Project page: http://laurent.pointal.org/python/projets/treetaggerwrapper
 .. _Source documentation: http://www.limsi.fr/Individu/pointal/python/treetaggerwrapper-doc/
@@ -35,6 +39,7 @@ Installation
 
 Simply put the module in a directory listed in the Python path.
 
+
 You should set up an environment variable :envvar:`TAGDIR` to reference the
 TreeTagger software installation directory (the one with :file:`bin`, :file:`lib`
 and :file:`cmd` subdirectories).
@@ -42,11 +47,11 @@ If you dont set up such a variable, you can give a `TAGDIR` named argument
 when building a :class:`TreeTagger` object to provide this information.
 
 ..
-    Check epydoc syntax, docformat changed.
-
-To build the documentation with epydoc::
+    To build the documentation with epydoc:
 
     epydoc --html -o treetaggerwrapper-doc --docformat epytext --name treetaggerwrapper treetaggerwrapper.py
+    
+    (but currently epydoc doesnt understand all Sphinx extensions to reStructuredText)
 
 Usage
 -----
@@ -59,7 +64,7 @@ Example::
     >>> #2) tag your text.
     >>> tags = tagger.TagText("This is a very short text to tag.")
     >>> #3) use the tags list... (list of string output from TreeTagger).
-    >>> print tags
+    >>> print tags                                                                     
     ['This\tDT\tthis',
      'is\tVBZ\tbe',
      'a\tDT\ta',
@@ -69,6 +74,7 @@ Example::
      'to\tTO\tto',
      'tag\tVB\ttag',
      '.\tSENT\t.']
+    >>> # Note: in ourput strings, fields are separated with tab chars.
 
 The module can be used as a command line tool too, for more information
 ask for module help::
@@ -272,7 +278,7 @@ Module globals and constants
 
     Regular expression object to match email addresses.
 
-Module class, functions and exceptions
+Module exceptions, class and functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 """
