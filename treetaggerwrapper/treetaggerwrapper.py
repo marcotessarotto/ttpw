@@ -887,9 +887,9 @@ class TreeTagger (object) :
         else :
             self.fchar_re = None
             self.fcharandperiod_re = None
-        self.pclictic = self.langsupport["pclictic"]
 
         #----- Character sequences to cut-off at begining of words.
+        self.pclictic = self.langsupport["pclictic"]
         if self.pclictic :
             self.pclictic_re = re.compile("^("+self.pclictic+")(.*)",
                                             re.IGNORECASE|re.VERBOSE)
