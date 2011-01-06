@@ -74,7 +74,7 @@ Example::
      'to\tTO\tto',
      'tag\tVB\ttag',
      '.\tSENT\t.']
-    >>> # Note: in ourput strings, fields are separated with tab chars.
+    >>> # Note: in output strings, fields are separated with tab chars.
 
 The module can be used as a command line tool too, for more information
 ask for module help::
@@ -300,6 +300,7 @@ import re
 import sys
 import getopt
 import codecs
+import subprocess
 
 DEBUG = 0
 DEBUG_PREPROCESS = 0
@@ -495,8 +496,8 @@ def PipeWriter(pipe,text,flushsequence,encoding=TREETAGGER_ENCODING,
     ad-hoc encoding is providen by caller). If it is composed of unicode
     strings, then they are converted to the specified encoding.
 
-    :param  pipe: the pipe on what to write the text.
-    :type   pipe: pipe object (file-like with write and flush methods)
+    :param  pipe: the Popen pipe on what to write the text.
+    :type   pipe: Popen object (file-like with write and flush methods)
     :param  text: the text to write.
     :type   text: string or list of strings
     :param  flushsequence: lines of tokens to ensure flush by TreeTagger.
@@ -628,6 +629,8 @@ class TreeTagger (object) :
     :type   replipexp: string
     :ivar   repldnsexp: regular expression subtitution string for DNS names.
     :type   repldnsexp: string
+    :ivar   tagpopen: TreeTagger process control tool.
+    :type   tagpopen: Popen
     :ivar   taginput: pipe to write to TreeTagger input. Set whe opening pipe.
     :type   taginput: write stream
     :ivar   tagoutput: pipe to read from TreeTagger input. Set whe opening
@@ -817,6 +820,7 @@ class TreeTagger (object) :
         logger.info("tagoutencerr=%s",self.tagoutencerr)
 
         # TreeTagger is started later (when needed).
+        self.tagpopen = None
         self.taginput = None
         self.tagoutput = None
 
@@ -928,7 +932,24 @@ class TreeTagger (object) :
         # Fixed tagparfile not quoted bug (Joel Nothman).
         tagcmd = u'%s %s "%s"' %(self.tagbin,self.tagopt,self.tagparfile)
         try :
-            self.taginput,self.tagoutput = os.popen2(tagcmd)
+            #self.taginput,self.tagoutput = os.popen2(tagcmd)
+            self.tagpopen = subprocess.Popen(
+                            tagcmd,         # Kept as it was for use with popen2 
+                            bufsize=0,      # Not buffered to retrieve data asap from TreeTagger
+                            executable=self.tagbin, # As we have it, specify it
+                            stdin=subprocess.PIPE,  # Get a pipe to write input data to TreeTagger process
+                            stdout=subprocess.PIPE, # Get a pipe to read processing results from TreeTagger
+                            #stderr=None,     unused
+                            #preexec_fn=None, unused
+                            #close_fds=False, And cannot be set to true and use pipes simultaneously on windows
+                            #shell=False,     We specify full path to treetagger binary, no reason to use shell
+                            #cwd=None,        Normally files are specified with full path, so dont set cwd 
+                            #env=None,        Let inherit from current environment
+                            #universal_newlines=False,  Keep no universal newlines, manage myself
+                            #startupinfo=None, unused
+                            #creationflags=0   unused
+                            ) 
+            self.taginput,self.tagoutput = self.tagpopen.stdin,self.tagpopen.stdout
             logger.info("Started TreeTagger from command: %s",tagcmd)
         except :
             logger.error("Failure to start TreeTagger with: %s",\
@@ -947,6 +968,9 @@ class TreeTagger (object) :
         if self.tagoutput :
             self.tagoutput.close()
             self.tagoutput = None
+        if self.tagpopen :
+            self.tagpopen = None
+            # There are terminate() and kill() methods, but only from Python 2.6.
 
     #--------------------------------------------------------------------------
     def TagText(self,text,numlines=False,tagonly=False,
