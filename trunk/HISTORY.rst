@@ -1,3 +1,8 @@
+2010-01-06
+Modified TT launch to use subprocess module in place of popen2 (preparation
+for a Python 3 version branch for Felix Haller).
+Start of a test suite.
+
 2009-10-13
 Initial import of project on SourceSup subversion hosting.
 Moved history from module docstring into this file.
