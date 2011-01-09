@@ -20,5 +20,13 @@ Support chunking for:
 
 This version is based on Python 2.
 
+Module provide docstring documentation for use of the main class and its
+methods.
+
+Subversion repository: https://sourcesup.cru.fr/scm/browser.php?group_id=647
+
+TreeTagger
+~~~~~~~~~~
+
 Treetagger itself is is freely available for research, education and evaluation.
 See http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html
