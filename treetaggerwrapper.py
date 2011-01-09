@@ -18,11 +18,11 @@ For this module, see:
 
 * `Project page`_
 * `Source documentation`_
-* `Source repository`_ 
+* `Source repository`_
 * `Recent source`_
 
   You can also retrieve the latest version of this module with the svn command::
-   
+
       svn export https://subversion.cru.fr/ttpw/trunk/treetaggerwrapper/treetaggerwrapper.py
 
 .. _Project page: http://laurent.pointal.org/python/projets/treetaggerwrapper
@@ -50,7 +50,7 @@ when building a :class:`TreeTagger` object to provide this information.
     To build the documentation with epydoc:
 
     epydoc --html -o treetaggerwrapper-doc --docformat epytext --name treetaggerwrapper treetaggerwrapper.py
-    
+
     (but currently epydoc doesnt understand all Sphinx extensions to reStructuredText)
 
 Usage
@@ -64,7 +64,7 @@ Example::
     >>> #2) tag your text.
     >>> tags = tagger.TagText("This is a very short text to tag.")
     >>> #3) use the tags list... (list of string output from TreeTagger).
-    >>> print tags                                                                     
+    >>> print tags
     ['This\tDT\tthis',
      'is\tVBZ\tbe',
      'a\tDT\ta',
@@ -301,6 +301,8 @@ import sys
 import getopt
 import codecs
 import subprocess
+import shlex
+import time
 
 DEBUG = 0
 DEBUG_PREPROCESS = 0
@@ -929,12 +931,13 @@ class TreeTagger (object) :
         Internal use.
         """
         #----- Start the TreeTagger.
-        # Fixed tagparfile not quoted bug (Joel Nothman).
-        tagcmd = u'%s %s "%s"' %(self.tagbin,self.tagopt,self.tagparfile)
+        tagcmdlist = [ self.tagbin ]
+        tagcmdlist.extend(shlex.split(self.tagopt))
+        tagcmdlist.append(self.tagparfile)
         try :
             #self.taginput,self.tagoutput = os.popen2(tagcmd)
             self.tagpopen = subprocess.Popen(
-                            tagcmd,         # Kept as it was for use with popen2 
+                            tagcmdlist,     # Use a list of params in place of a string.
                             bufsize=0,      # Not buffered to retrieve data asap from TreeTagger
                             executable=self.tagbin, # As we have it, specify it
                             stdin=subprocess.PIPE,  # Get a pipe to write input data to TreeTagger process
@@ -943,16 +946,16 @@ class TreeTagger (object) :
                             #preexec_fn=None, unused
                             #close_fds=False, And cannot be set to true and use pipes simultaneously on windows
                             #shell=False,     We specify full path to treetagger binary, no reason to use shell
-                            #cwd=None,        Normally files are specified with full path, so dont set cwd 
+                            #cwd=None,        Normally files are specified with full path, so dont set cwd
                             #env=None,        Let inherit from current environment
                             #universal_newlines=False,  Keep no universal newlines, manage myself
                             #startupinfo=None, unused
                             #creationflags=0   unused
-                            ) 
+                            )
             self.taginput,self.tagoutput = self.tagpopen.stdin,self.tagpopen.stdout
-            logger.info("Started TreeTagger from command: %s",tagcmd)
+            logger.info("Started TreeTagger from command: %r",tagcmdlist)
         except :
-            logger.error("Failure to start TreeTagger with: %s",\
+            logger.error("Failure to start TreeTagger with: %r",\
                                 tagcmd,exc_info=True)
             raise
 
@@ -1073,12 +1076,18 @@ class TreeTagger (object) :
                                         lines,self.dummysequence,
                                         self.taginencoding,self.taginencerr))
         t.start()
+        time.sleep(1) # Leave thread and tagger time to start communicating.
 
         result = []
         intext = False
         while True :
             line = self.tagoutput.readline()
             if DEBUG : logger.debug("Read from TreeTagger: %r",line)
+            if not line :
+                # We process too much quickly, leave time for tagger and writer
+                # thread to worl.
+                time.sleep(0.1)
+
             line = line.decode(self.tagoutencoding,self.tagoutencerr)
             line = line.strip()
             if line == STARTOFTEXT :
