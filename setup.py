@@ -28,5 +28,6 @@ setup(name='treetaggerwrapper',
                 'Topic :: Scientific/Engineering :: Information Analysis',
                 ],
     long_description=open("README.txt").read(),
+    test_suite = 'unittest2.collector' ,
     )
 

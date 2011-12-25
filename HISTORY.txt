@@ -1,4 +1,12 @@
-2010-01-06
+2011-01-09
+Work on packaging (will try to provide a Python egg later).
+Modified first Popen parameter to be a list in place of a string (use of
+a string make processing start a problem under my Linux).
+At some time of text processing, use sleep() to have the writer thread
+and TreeTagger communicate - else many process time is simply used to pool
+on an empty pipe.
+
+2011-01-06
 Modified TT launch to use subprocess module in place of popen2 (preparation
 for a Python 3 version branch for Felix Haller).
 Start of a test suite.
