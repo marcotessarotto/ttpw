@@ -1076,7 +1076,6 @@ class TreeTagger (object) :
                                         lines,self.dummysequence,
                                         self.taginencoding,self.taginencerr))
         t.start()
-        time.sleep(1) # Leave thread and tagger time to start communicating.
 
         result = []
         intext = False
