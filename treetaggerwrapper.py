@@ -6,7 +6,7 @@
 
 :author: Laurent Pointal <laurent.pointal@limsi.fr> <laurent.pointal@laposte.net>
 :organization: CNRS - LIMSI
-:copyright: CNRS - 2004-2009
+:copyright: CNRS - 2004-2015
 :license: GNU-GPL Version 3 or greater
 :version: $Id$
 
@@ -372,8 +372,10 @@ DEFAULT_ENCERRORS = "strict"
 #        a fchar.
 #        \202 is a special ,
 #        \226 \227 are special -
-alonemarks = u"!?¿;,\202*¤@°:%|¦/()[\]{}<>«»´`¨&~=#±\226"+\
-             u"\227£¥$©®\""
+alonemarks = u"!?¿;\u0085,\202*\u0095¤@°:%\u0089|¦/()[\]{}" + \
+             u"<>«»\u008b\u009b\u0093\u0094´`\u0091\u0092\u0088¨" + \
+             u"&~=#±\u0086\u0087\226" + \
+             u"\227\u0080£¥$©®\u0099\""
 g_langsupport = {
     "en": { "binfile-win": "tree-tagger.exe",
             "binfile-lin": "tree-tagger",
