@@ -45,7 +45,10 @@ Subversion repository is on french academic `Sourcesup`_ site.
 
 .. _Sourcesup: https://sourcesup.cru.fr/scm/browser.php?group_id=647
 
-treetagger wraper developer page is
+You can also see treetagger wrapper `developer page`_.
+
+.. _developer page: https://perso.limsi.fr/pointal/dev:treetaggerwrapper
+
 
 Installation
 ------------
