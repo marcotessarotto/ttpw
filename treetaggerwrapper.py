@@ -39,6 +39,18 @@ Installation
 
 Simply put the module in a directory listed in the Python path.
 
+As the module is now registered on `PyPI`_, you can simply install it::
+
+  pip install treetaggerwrapper
+
+Or, if you cant (or dont want) to install the module system-wide (and dont
+use a `virtual env`_)::
+
+   pip install --user treetaggerwrapper
+
+.. _PyPI: https://pypi.python.org/pypi/treetaggerwrapper
+.. _virtual env: https://virtualenv.pypa.io/en/latest/
+
 The wrapper search for a treetagger directory (allowing variations in name)
 in different locations from user home directory to host-wide directories.
 If the treetagger directory is found, its location is stored in a file
