@@ -39,7 +39,7 @@ and globally reworked, bugs fixed.
 Module provide docstring documentation for use of the main class and its
 methods, it is exported in a readable format at `Read the Docs`_.
 
-.. _Read the Docs: https://readthedocs.org/projects/treetaggerwrapper/builds/3262126/
+.. _Read the Docs: http://treetaggerwrapper.readthedocs.org/
 
 Subversion repository is on french academic `Sourcesup`_ site.
 
