@@ -1,3 +1,7 @@
+2015-08-xx
+Global code review, interface modifications, many enhancements, port
+to Python2 (recent) and Python3, rework documentation.
+
 2011-01-09
 Work on packaging (will try to provide a Python egg later).
 Modified first Popen parameter to be a list in place of a string (use of

@@ -38,6 +38,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'TreeTagger Python Wrapper'
+
 copyright = u'2004-2010, CNRS - LIMSI, by Laurent Pointal'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -86,15 +87,19 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
+# -- Options for autodoc ---------------------------------------------------
 
 autoclass_content = 'both'
 
+autodoc_default_flags = []
 
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'default'
+# Now 'classic' and the new 'alabaster'.
+
+html_theme = 'classic'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
