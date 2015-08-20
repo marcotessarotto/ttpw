@@ -1,6 +1,9 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 """TreeTagger Python wrapper test module.
+
+Note: You must run tests under Python3, as subTest is not
+(as write time) in Python2 test package.
 """
 
 from __future__ import print_function

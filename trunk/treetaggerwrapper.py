@@ -124,7 +124,9 @@ modifications imply modifications in users code.
 - **Methods renamed** (and functions too) to follow Python rules, 
   they are now lowercase
   with underscore separator between words.
-  Typically for users, ``tt.TagText()`` becomes ``tt.tag_text()``.
+  Typically for users, ``tt.TagText()`` becomes ``tt.tag_text()``
+  (for this method a compatibility method has been written, but
+  no longer support of list of non-unicode strings).
 
 - Work with Python2 and Python3, with same code.
 
@@ -1025,6 +1027,23 @@ class TreeTagger(object):
             # Will see if it is necessary to replace terminate by kill.
             # self.tagpopen.kill()
             self.tagpopen = None
+
+    #--------------------------------------------------------------------------
+    def TagText(self, text, numlines=False, tagonly=False,
+                prepronly=False, tagblanks=False, notagurl=False,
+                notagemail=False, notagip=False, notagdns=False,
+                encoding=None, errors="strict") :
+        """Old method for compatibility.
+        """
+        if encoding and not isinstance(text, six.text_type):
+            if isinstance(text, six.binary_type):
+                text = text.decode(encoding)
+            # Note: we dont manage decoding of lists of binary strings!
+            # the function may fail later unless a list of Unicode strings
+            # has been providen.
+        return self.tag_text(text, numlines=numlines, tagonly=tagonly,
+                 prepronly=prepronly, tagblanks=tagblanks, notagurl=notagurl,
+                 notagemail=notagemail, notagip=notagip, notagdns=notagdns)
 
     # --------------------------------------------------------------------------
     def tag_text(self, text, numlines=False, tagonly=False,
