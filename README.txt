@@ -1,5 +1,4 @@
 Python wrapper for TreeTagger, a language independent part-of-speech tagger
----------------------------------------------------------------------------
 
 Wrap the Helmut Schmid tool into a Python class allowing to tag several texts
 one after the other, maintaining connexions with the tagger process to speed-up
@@ -15,7 +14,7 @@ Support chunking for:
 
   - english
   - french
-  - deutch
+  - german
   - spanish
 
 This version is based on Python 2.
@@ -26,7 +25,6 @@ methods.
 Subversion repository: https://sourcesup.cru.fr/scm/browser.php?group_id=647
 
 TreeTagger
-~~~~~~~~~~
 
 Treetagger itself is is freely available for research, education and evaluation.
 See http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html
