@@ -4,7 +4,7 @@
 
 from distutils.core import setup
 import sys
-
+import io
 
 setup(
     name='treetaggerwrapper',
@@ -30,6 +30,6 @@ setup(
                 'Topic :: Software Development :: Libraries :: Python Modules',
                 'Topic :: Text Processing :: Linguistic',
              ],
-    long_description=open("README.txt").read(),
+    long_description=io.open("README.txt", encoding='utf-8').read(),
     )
 
