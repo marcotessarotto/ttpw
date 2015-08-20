@@ -73,7 +73,7 @@ TreeTagger
 Treetagger itself is is freely available for research, education and evaluation.
 See `TreeTagger page`_.
 
-.. `TreeTagger page`: http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html
+.. _TreeTagger page: http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html
 
 There is an installation procedure based on a script, where you download needed files
 into the directory where you want to install TreeTagger, including the installation
@@ -82,4 +82,4 @@ directories.
 
 If you install TreeTagger in a common place, there is normally a working autodetection.
 But if you install it in a special place or with a special name, you will have
-to provide this installation directory to the module (see :envvar:`TAGDIR` in the doc).
+to provide this installation directory to the module (see ``TAGDIR`` in the doc).
