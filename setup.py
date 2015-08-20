@@ -6,28 +6,30 @@ from distutils.core import setup
 import sys
 
 
-setup(name='treetaggerwrapper',
-    version='1.0',
+setup(
+    name='treetaggerwrapper',
+    version='2.0',
     author='Laurent Pointal',
     author_email='laurent.pointal@limsi.fr',
     url='http://perso.limsi.fr/pointal/dev:treetaggerwrapper',
-    download_url='https://sourcesup.cru.fr/projects/ttpw/',
+    download_url='https://sourcesup.renater.fr/projects/ttpw/',
     description='Wrapper for the TreeTagger text annotation tool from H.Schmid.',
-    py_modules=['treetaggerwrapper.py'],
-    provides=['xxxxx'],
+    py_modules=['treetaggerwrapper'],
     keywords=['tagger','treetagger','wrapper','text','annotation','linguistic'],
-    license='GNU General Public License v2 or greater',
+    license='GNU General Public License v3 or greater',
     classifiers=[
                 'Development Status :: 5 - Production/Stable',
                 'Intended Audience :: Science/Research',
                 'Natural Language :: English',
                 'Operating System :: OS Independent',
                 'Programming Language :: Python :: 2',
+                'Programming Language :: Python :: 3',
                 'License :: OSI Approved :: GNU General Public License (GPL)',
                 'Topic :: Scientific/Engineering',
                 'Topic :: Scientific/Engineering :: Information Analysis',
-                ],
+                'Topic :: Software Development :: Libraries :: Python Modules',
+                'Topic :: Text Processing :: Linguistic',
+             ],
     long_description=open("README.txt").read(),
-    test_suite = 'unittest2.collector' ,
     )
 

@@ -1,30 +1,82 @@
-Python wrapper for TreeTagger, a language independent part-of-speech tagger
+Python wrapper for TreeTagger
+=============================
 
-Wrap the Helmut Schmid tool into a Python class allowing to tag several texts
-one after the other, maintaining connexions with the tagger process to speed-up
-processing.
+.. note:
 
-Can do the chunking within the wrapper methods, or using an external tool (and
-provide directly tokens to the tagger).
+    TreeTagger is a language independent part-of-speech tagger.
 
-Using objects, can start multiple taggers simultaneously, eventually using
+:author: Laurent Pointal <laurent.pointal@limsi.fr> <laurent.pointal@laposte.net>
+:organization: CNRS - LIMSI
+:copyright: CNRS - 2004-2015
+:license: GNU-GPL Version 3 or greater
+
+
+What is it
+----------
+
+This module wrap the Helmut Schmid tool into a Python class allowing to tag
+several texts one after the other, maintaining connexions with the tagger
+process to speed-up processing (remove external Perl scripts dependency
+for chunking).
+
+Using objects, you can start multiple taggers simultaneously, eventually using
 different languages.
 
 Support chunking for:
 
-  - english
-  - french
-  - german
-  - spanish
+- english
+- french
+- german
+- spanish
 
-This version is based on Python 2.
+Support tagging for languages supported by TreeTagger, but you have to
+do chunking by your own, if necessary you have to specify parameter
+files via options.
+
+This version has been reworked to run with Python2 and Python3 (thanks so six)
+and globally reworked, bugs fixed.
 
 Module provide docstring documentation for use of the main class and its
-methods.
+methods, it is exported in a readable format at `Read the Docs`_.
 
-Subversion repository: https://sourcesup.cru.fr/scm/browser.php?group_id=647
+.. _Read the Docs: https://readthedocs.org/projects/treetaggerwrapper/builds/3262126/
+
+Subversion repository is on french academic `Sourcesup`_ site.
+
+.. _Sourcesup: https://sourcesup.cru.fr/scm/browser.php?group_id=647
+
+treetagger wraper developer page is
+
+Installation
+------------
+
+Unless someone built a package for your OS distro, the simplest procedure
+is to use ``pip`` to install the module:
+
+    pip install treetaggerwrapper
+
+If you have no admin access to install things on you computer, you may install
+a virtualenv and run pip inside this virtual env, or you can do a local user
+installation:
+
+    pip install --user treetaggerwrapper
+
+You also need to install TreeTagger…
+
 
 TreeTagger
+----------
 
 Treetagger itself is is freely available for research, education and evaluation.
-See http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html
+See `TreeTagger page`_.
+
+.. `TreeTagger page`: http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html
+
+There is an installation procedure based on a script, where you download needed files
+into the directory where you want to install TreeTagger, including the installation
+script, and then launch the script to unzip and install right files in right
+directories.
+
+If you install TreeTagger in a common place, there is normally a working autodetection.
+But if you install it in a special place or with a special name, you will have
+to provide this installation directory to the module (see :envvar:`TAGDIR` in the doc).
