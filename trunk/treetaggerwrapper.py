@@ -33,6 +33,9 @@ Note: Documentation generation uses sphinx with some of its 1.3 options.
 
    See :ref:`important modifications notes` below !
 
+   If you use this wrapper, a small email would be wellcome to support
+   module maintenance (where, purpose, funding…).
+   Send it to laurent.pointal@limsi.fr
 
 Installation
 ------------
@@ -2144,10 +2147,6 @@ TreeTagger, and write TreeTagger output to files with .{RESEXT} extension.
 Read all data from the input stream, then preprocess it, send it to
 TreeTagger, and write  TreeTagger output to output stream.
 
-Can be used with shell pipes, like this (adapt encoding to your console):
-
-    echo "This is the sentence." | python -m treetaggerwrapper -e utf8 --pipe
-
 Options:
     -p          preprocess only (no tagger)
     -t          tagger only (no preprocessor)
@@ -2202,6 +2201,24 @@ or direct files content using shell redirections).
 Note: When numbering lines, you must ensure that SGML/XML tags in your data
 file doesn't split around lines (else you will get line numberning tags into
 your text tags... with bad result on tags recognition by regular expression).
+
+Examples with pipe:
+
+One installed in the PYTHONPATH, the module can be used from anywhere
+Using Python -m option. Combined with pipe, you can easily do some tests
+(adapt encoding to your console):
+
+To preprocess and tag a small text:
+
+    echo "This is the sentence." | python -m treetaggerwrapper -e utf8 --pipe
+
+To just see preprocessing (chunking) result:
+
+    echo "This is the sentence." | python -m treetaggerwrapper -e utf8 --pipe --prepronly
+
+To just see tagging (TreeTagger call) result:
+
+echo -e "This\nis\nthe\nsentence\n." | python -m treetaggerwrapper -e utf8 --pipe --tagonly
 
 Written by Laurent Pointal <laurent.pointal@limsi.fr> for CNRS-LIMSI.
 Alternate email: <laurent.pointal@laposte.net>
