@@ -1046,7 +1046,7 @@ class TreeTagger(object):
             # self.taginput,self.tagoutput = os.popen2(tagcmd)
             self.tagpopen = subprocess.Popen(
                 tagcmdlist,  # Use a list of params in place of a string.
-                bufsize=0,  # Not buffered to retrieve data asap from TreeTagger
+                bufsize=0,   # Not buffered to retrieve data asap from TreeTagger
                 executable=self.tagbin,  # As we have it, specify it
                 stdin=subprocess.PIPE,  # Get a pipe to write input data to TreeTagger process
                 stdout=subprocess.PIPE,  # Get a pipe to read processing results from TreeTagger
@@ -1956,9 +1956,18 @@ def locate_treetagger():
     # I initially listed some common home subdirs… finally use
     # a list of home and all its first level subdirectories.
     home = osp.abspath(osp.expanduser("~"))
-    searchdirs = [osp.join(home, x) for x in os.listdir(home)]
-    searchdirs = [x for x in searchdirs if osp.isdir(x)]
-    searchdirs.insert(0, home)
+    moduledir = osp.dirname(osp.abspath(__file__))
+    moduleparentdir = osp.dirname(moduledir)
+
+    searchdirs = []
+    searchdirs.append(moduledir)
+    if moduleparentdir != moduledir:
+        searchdirs.append(moduleparentdir)
+    if home not in searchdirs:
+        searchdirs.append(home)
+    homedirs = [osp.join(home, x) for x in os.listdir(home)]
+    homedirs = [x for x in homedirs if osp.isdir(x) and x not in searchdirs]
+    searchdirs.extend(homedirs)
 
     if ON_MACOSX:
         searchdirs.extend([
@@ -2003,9 +2012,9 @@ def locate_treetagger():
     # subdirectories.
     founddir = None
     for directory in searchdirs:
-        if not osp.isdir(directory):
-            continue
         try:
+            if not osp.isdir(directory):
+                continue
             for candidate in os.listdir(directory):
                 if not osp.isdir(osp.join(directory, candidate)):
                     continue
@@ -2371,7 +2380,7 @@ if __name__ == "__main__":
     if DEBUG: enable_debugging_log()
     try:
         sys.exit(main(*(sys.argv[1:])))
-    except:
+    except TreeTaggerError:
         if not DEBUG:
             print("##### Try running with --debug option to get more informations #####")
         raise
