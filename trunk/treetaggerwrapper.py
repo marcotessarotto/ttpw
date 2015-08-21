@@ -820,10 +820,11 @@ class TreeTagger(object):
         else:
             self.lang = "en"
         if self.lang not in g_langsupport:
-            logger.error("Language %s not supported.", self.lang)
-            langs = sorted(g_langsupport.keys())
-            logger.error("Referenced language codes: %s", ', '.join(langs))
-            raise TreeTaggerError("Unsupported language code: " + self.lang)
+            allowed = ', '.join(sorted(g_langsupport.keys()))
+            logger.error("Language %s not supported - allowed: %s",
+                         self.lang, allowed)
+            raise TreeTaggerError("Unsupported language code: " + self.lang +
+                                  ". allowed: " + allowed)
         logger.info("lang=%s", self.lang)
         self.langsupport = g_langsupport[self.lang]
 
@@ -1207,8 +1208,9 @@ class TreeTagger(object):
                 if DEBUG: logger.debug("Read from TreeTagger: %r", line)
                 if not line:
                     # We process too much quickly, leave time for tagger and writer
-                    # thread to worl.
+                    # thread to work.
                     time.sleep(0.1)
+                    continue    # read again.
 
                 line = line.decode(self.tagoutencoding, self.tagoutencerr)
                 line = line.strip()
