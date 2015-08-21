@@ -1793,8 +1793,8 @@ def split_ip(text, replace, sgmlformat):
 # and require al least two names separated by a dot.
 DnsHost_expression = r"""
     (?:xn--)?   # Punycode notation for internationalized names
-    (?:[a-z0-9][-a-z0-9]{0,61}[a-z0-9]\.)+  # host and intermediate domain names
-    (?:[[a-z0-9][-a-z0-9]{0,61}[a-z0-9])     # tld name
+    (?:[a-z][-a-z0-9]{0,61}[a-z0-9]\.)+  # host and intermediate domain names
+    (?:[[a-z][-a-z0-9]{0,61}[a-z0-9])     # tld name
     """
 DnsHostMatch_re = re.compile("(" + DnsHost_expression + ")",
                              re.VERBOSE | re.IGNORECASE)
