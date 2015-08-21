@@ -911,6 +911,8 @@ class TreeTagger(object):
 
         # ----- Find TreeTagger options.
         self.tagopt = get_param("TAGOPT", kargs, "-token -lemma -sgml -quiet -no-unknown")
+        # If user dont want sgml, we activate them on the TreeTagger side,
+        # but will remove them when reading.
         if "-sgml" not in self.tagopt:
             self.tagopt = "-sgml " + self.tagopt
             self.removesgml = True
@@ -2179,10 +2181,10 @@ Other options:
                             strict or ignore or replace (default
                             to strict).
     --debug                 enable debugging log file (treetaggerwrapper.log)
-    --numlines              number lines with sgml tags
-    --tagonly               only tag text, no chunking.
-    --prepronly             only chunking, no tagging.
-    --tagblanks             insert sgml tags for blank chars.
+    --numlines              number lines with sgml tags (as -n).
+    --tagonly               only tag text, no chunking (as -t).
+    --prepronly             only chunking, no tagging (as -p).
+    --tagblanks             insert sgml tags for blank chars (as -b).
     --notagurl              don't insert sgml tags for URLs.
     --notagemail            don't insert sgml tags for emails.
     --notagip               don't insert sgml tags for ip addresses.
