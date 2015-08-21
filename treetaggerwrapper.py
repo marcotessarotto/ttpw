@@ -39,7 +39,8 @@ Installation
 
 Simply put the module in a directory listed in the Python path.
 
-As the module is now registered on `PyPI`_, you can simply install it::
+As the module is now registered on `PyPI`_, you can simply install it (this will
+install module :mod:`six` if not already installed)::
 
   pip install treetaggerwrapper
 
@@ -273,7 +274,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.0'
+__version__ = '2.0.1'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
