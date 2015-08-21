@@ -21,7 +21,7 @@ for fname in flist:
     if PROFILING:
         cProfile.run("res = tt.tag_file(fname)")
         break   # Just process one file.
-    else!
+    else:
         res = tt.tag_file(fname)
         # Uncomment to save result and diff data.
         #with io.open(fname+str(sys.version_info.major), "w", encoding='utf-8') as f:

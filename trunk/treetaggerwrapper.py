@@ -746,7 +746,10 @@ class TreeTagger(object):
     :type   taginput: write stream
     :ivar   tagoutput: pipe to read from TreeTagger input. Set whe opening
                     pipe.
-    :type   tagoutput: read stream"""
+    :type   tagoutput: read stream
+    :ivar   taggerlock: synchronization tool for multuthread use of the object.
+    :type   taggerlock: threading.Lock
+    """
     # --------------------------------------------------------------------------
     def __init__(self, **kargs):
         """ Construction of a wrapper for a TreeTagger process.
@@ -820,6 +823,8 @@ class TreeTagger(object):
 
         Internal use.
         """
+        self.taggerlock = threading.Lock()
+
         # ----- Find TreeTagger directory.
         self.tagdir = get_param("TAGDIR", kargs, None)
         if self.tagdir is None:
@@ -1169,43 +1174,46 @@ class TreeTagger(object):
         if prepronly:
             return lines
 
-        # TreeTagger process is started at first need.
-        if self.taginput is None:
-            self._start_process()
+        # Prevent concurrent access to the pipe if used in multithreading
+        # context.
+        with self.taggerlock:
+            # TreeTagger process is started at first need.
+            if self.taginput is None:
+                self._start_process()
 
-        # Send text to TreeTagger, get result.
-        logger.debug("Tagging text.")
-        t = threading.Thread(target=pipe_writer,
-                             args=(self.taginput,
-                                   lines, self.dummysequence,
-                                   self.taginencoding,
-                                   self.taginencerr))
-        t.start()
+            # Send text to TreeTagger, get result.
+            logger.debug("Tagging text.")
+            t = threading.Thread(target=pipe_writer,
+                                 args=(self.taginput,
+                                       lines, self.dummysequence,
+                                       self.taginencoding,
+                                       self.taginencerr))
+            t.start()
 
-        result = []
-        intext = False
-        while True:
-            line = self.tagoutput.readline()
-            if DEBUG: logger.debug("Read from TreeTagger: %r", line)
-            if not line:
-                # We process too much quickly, leave time for tagger and writer
-                # thread to worl.
-                time.sleep(0.1)
+            result = []
+            intext = False
+            while True:
+                line = self.tagoutput.readline()
+                if DEBUG: logger.debug("Read from TreeTagger: %r", line)
+                if not line:
+                    # We process too much quickly, leave time for tagger and writer
+                    # thread to worl.
+                    time.sleep(0.1)
 
-            line = line.decode(self.tagoutencoding, self.tagoutencerr)
-            line = line.strip()
-            if line == STARTOFTEXT:
-                intext = True
-                continue
-            if line == ENDOFTEXT:  # The flag we sent to identify texts.
-                intext = False
-                break
-            if intext and line:
-                if not (self.removesgml and is_sgml_tag(line)):
-                    result.append(line)
+                line = line.decode(self.tagoutencoding, self.tagoutencerr)
+                line = line.strip()
+                if line == STARTOFTEXT:
+                    intext = True
+                    continue
+                if line == ENDOFTEXT:  # The flag we sent to identify texts.
+                    intext = False
+                    break
+                if intext and line:
+                    if not (self.removesgml and is_sgml_tag(line)):
+                        result.append(line)
 
-        # Synchronize to avoid possible problems.
-        t.join()
+            # Synchronize to avoid possible problems.
+            t.join()
 
         return result
 
