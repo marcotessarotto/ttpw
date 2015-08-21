@@ -37,20 +37,43 @@ Note: Documentation generation uses sphinx with some of its 1.3 options.
 Installation
 ------------
 
-Simply put the module in a directory listed in the Python path.
+Requirements
+~~~~~~~~~~~~
 
-As the module is now registered on `PyPI`_, you can simply install it (this will
-install module :mod:`six` if not already installed)::
+``treetaggerwrapper`` rely on :mod:`six` module for Python2 and Python3
+compatibility. It also uses standard :mod:`io` module for files reading with
+decoding/encoding .
+
+Tests have been limited to Python 2.7 and Python 3.4 under Linux and Windows.
+It don't work with earlier version of Python as some names are not defined in
+their standard libraries.
+
+Automatic
+~~~~~~~~~
+
+As the module is now registered on `PyPI`_, you can simply install it::
 
   pip install treetaggerwrapper
 
-Or, if you cant (or dont want) to install the module system-wide (and dont
+Or, if you cant (or don't want) to install the module system-wide (and don't
 use a `virtual env`_)::
 
    pip install --user treetaggerwrapper
 
 .. _PyPI: https://pypi.python.org/pypi/treetaggerwrapper
 .. _virtual env: https://virtualenv.pypa.io/en/latest/
+
+If necessary, you may `manually install pip`_ and rely on former
+instructions.
+
+.. _manually install pip: https://pip.pypa.io/en/latest/installing.html
+
+Manual
+~~~~~~
+
+For a complete manual installation, install :mod:`six` module and other
+dependancies, and simply put the :file:`treetaggerwrapper.py` file in a
+directory listed in the Python path (or in your scripts directory).
 
 The wrapper search for a treetagger directory (allowing variations in name)
 in different locations from user home directory to host-wide directories.
@@ -170,8 +193,6 @@ modifications imply modifications in users code.
 
 - XML tags generated have been modified (made shorted and with ``ttpw:`` namespace).
 
-Tests have been limited to Python 2.7.6 and Python 3.4.0.
-
 Processing
 ----------
 
@@ -274,7 +295,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.0.2'
+__version__ = '2.0.3'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
@@ -313,7 +334,7 @@ DEBUG_PREPROCESS = 0
 # (TreeTagger result => ttr)
 RESEXT = "ttr"
 
-# We dont print for errors/warnings, we use Python logging system.
+# We don't print for errors/warnings, we use Python logging system.
 logger = logging.getLogger("TreeTagger")
 # Avoid No handlers could be found for logger "TreeTagger" message.
 logger.addHandler(logging.NullHandler())
@@ -745,7 +766,7 @@ class TreeTagger(object):
         :keyword  TAGPARFILE: parameter file for TreeTagger.
                               (default available for supported languages).
                               Use value None to force use of default if
-                              environment variable define a value you dont wants
+                              environment variable define a value you don't wants
                               to use.
         :type   TAGPARFILE: string
         :keyword  TAGABBREV: abbreviation file for preprocessing.
@@ -1017,7 +1038,7 @@ class TreeTagger(object):
                 # preexec_fn=None, unused
                 # close_fds=False, And cannot be set to true and use pipes simultaneously on windows
                 # shell=False,     We specify full path to treetagger binary, no reason to use shell
-                # cwd=None,        Normally files are specified with full path, so dont set cwd
+                # cwd=None,        Normally files are specified with full path, so don't set cwd
                 # env=None,        Let inherit from current environment
                 # universal_newlines=False,  Keep no universal newlines, manage myself
                 startupinfo=startupinfo,
@@ -1058,7 +1079,7 @@ class TreeTagger(object):
         if encoding and not isinstance(text, six.text_type):
             if isinstance(text, six.binary_type):
                 text = text.decode(encoding)
-            # Note: we dont manage decoding of lists of binary strings!
+            # Note: we don't manage decoding of lists of binary strings!
             # the function may fail later unless a list of Unicode strings
             # has been providen.
         return self.tag_text(text, numlines=numlines, tagonly=tagonly,
@@ -1138,7 +1159,7 @@ class TreeTagger(object):
                                        nosgmlsplit=nosgmlsplit)
         else:
             # Adapted to support list of lines.
-            # And do split on end of lines, not on spaces (ie if we dont prepare the
+            # And do split on end of lines, not on spaces (ie if we don't prepare the
             # text, we can consider that it has been prepared elsewhere by caller,
             # and that there is only one token item by line for TreeTagger).
             lines = []
@@ -1371,7 +1392,7 @@ class TreeTagger(object):
                                         split_dns, self.repldnsexp, REPLACED_DNS_TAG)
             logger.debug("DNS names replacement done.")
 
-        # Process part by part, some parts wille be SGML tags, other dont.
+        # Process part by part, some parts wille be SGML tags, other don't.
         logger.debug("Splittint parts of text.")
         newparts = []
         for part in parts:
@@ -1749,7 +1770,7 @@ def split_ip(text, replace, sgmlformat):
 
 
 # ==============================================================================
-# Dont parentheses expression to reuse it inside URLs and emails.
+# Don't parentheses expression to reuse it inside URLs and emails.
 # To not mismatch with acronyms, we exclude one char names in all places,
 # and require al least two names separated by a dot.
 DnsHost_expression = r"""
@@ -1909,7 +1930,7 @@ def locate_treetagger():
     if founddir is not None and osp.isdir(founddir):
         logger.info("Use env var specified TreeTagger directory: %s", founddir)
         return founddir
-        # Note: we dont cache the value set in env var.
+        # Note: we don't cache the value set in env var.
 
     # ===== Search in possible known paths.
     # --- User own installation:
@@ -2135,11 +2156,11 @@ Other options:
     --tagonly               only tag text, no chunking.
     --prepronly             only chunking, no tagging.
     --tagblanks             insert sgml tags for blank chars.
-    --notagurl              dont insert sgml tags for URLs.
-    --notagemail            dont insert sgml tags for emails.
-    --notagip               dont insert sgml tags for ip addresses.
-    --notagdns              dont insert sgml tags for dns names.
-    --nosgmlsplit           dont split on sgml/xml markups.
+    --notagurl              don't insert sgml tags for URLs.
+    --notagemail            don't insert sgml tags for emails.
+    --notagip               don't insert sgml tags for ip addresses.
+    --notagdns              don't insert sgml tags for dns names.
+    --nosgmlsplit           don't split on sgml/xml markups.
     
 Options you should not have to use:
     --ttinencoding enc      encoding to use for TreeTagger input
