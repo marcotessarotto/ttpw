@@ -274,7 +274,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
@@ -999,6 +999,12 @@ class TreeTagger(object):
         tagcmdlist = [self.tagbin]
         tagcmdlist.extend(shlex.split(self.tagopt))
         tagcmdlist.append(self.tagparfile)
+        if ON_WINDOWS:
+            # Prevent opening of a cmd console.
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        else:
+            startupinfo = None
         try:
             # self.taginput,self.tagoutput = os.popen2(tagcmd)
             self.tagpopen = subprocess.Popen(
@@ -1014,7 +1020,7 @@ class TreeTagger(object):
                 # cwd=None,        Normally files are specified with full path, so dont set cwd
                 # env=None,        Let inherit from current environment
                 # universal_newlines=False,  Keep no universal newlines, manage myself
-                # startupinfo=None, unused
+                startupinfo=startupinfo,
                 # creationflags=0   unused
             )
             self.taginput, self.tagoutput = self.tagpopen.stdin, self.tagpopen.stdout
@@ -1960,15 +1966,19 @@ def locate_treetagger():
     for directory in searchdirs:
         if not osp.isdir(directory):
             continue
-        for candidate in os.listdir(directory):
-            if not osp.isdir(osp.join(directory, candidate)):
-                continue
-            if matchname.match(candidate) is not None:
-                # Check if ad-hoc subdirectories are here too.
-                if osp.isdir(osp.join(directory, candidate, "bin")) and \
-                        osp.isdir(osp.join(directory, candidate, "lib")):
-                    founddir = osp.join(directory, candidate)
-                    break
+        try:
+            for candidate in os.listdir(directory):
+                if not osp.isdir(osp.join(directory, candidate)):
+                    continue
+                if matchname.match(candidate) is not None:
+                    # Check if ad-hoc subdirectories are here too.
+                    if osp.isdir(osp.join(directory, candidate, "bin")) and \
+                            osp.isdir(osp.join(directory, candidate, "lib")):
+                        founddir = osp.join(directory, candidate)
+                        break
+        except OSError:  # PermissionError is Python3 only
+            # Some directories may not be listables.
+            pass
         if founddir is not None:
             break
 
