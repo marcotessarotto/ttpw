@@ -1459,9 +1459,7 @@ class TreeTagger(object):
             # include such chars.
             if part.lower() in self.abbterms:
                 if DEBUG_PREPROCESS: logger.debug("Found explicit token: %r", part)
-                newparts.extend(prefix)
                 newparts.append(FinalPart(part))
-                newparts.extend(suffix)
                 continue
 
             # We put prefix subparts in the prefix list, and suffix subparts in the
