@@ -295,7 +295,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.0.3'
+__version__ = '2.0.4'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
