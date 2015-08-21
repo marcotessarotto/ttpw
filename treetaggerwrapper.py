@@ -193,6 +193,11 @@ modifications imply modifications in users code.
 
 - XML tags generated have been modified (made shorted and with ``ttpw:`` namespace).
 
+- Can be used in **multithreading** context (pipe communications with TreeTagger
+  are protected by a Lock, preventing concurrent access).
+  If you need multiple parallel processing, you can create multiple :class:`TreeTagger`
+  objects, put them in a pool, and work with them from different threads.
+
 Processing
 ----------
 
@@ -812,7 +817,9 @@ class TreeTagger(object):
         else:
             self.lang = "en"
         if self.lang not in g_langsupport:
-            logger.error("Langage %s not supported.", self.lang)
+            logger.error("Language %s not supported.", self.lang)
+            langs = sorted(g_langsupport.keys())
+            logger.error("Referenced language codes: %s", ', '.join(langs))
             raise TreeTaggerError("Unsupported language code: " + self.lang)
         logger.info("lang=%s", self.lang)
         self.langsupport = g_langsupport[self.lang]
@@ -2339,4 +2346,9 @@ def main(*args):
 # ==============================================================================
 if __name__ == "__main__":
     if DEBUG: enable_debugging_log()
-    sys.exit(main(*(sys.argv[1:])))
+    try:
+        sys.exit(main(*(sys.argv[1:])))
+    except:
+        if not DEBUG:
+            print("##### Try running with --debug option to get more informations #####")
+        raise
