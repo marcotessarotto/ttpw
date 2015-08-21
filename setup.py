@@ -17,6 +17,7 @@ setup(
     py_modules=['treetaggerwrapper'],
     keywords=['tagger','treetagger','wrapper','text','annotation','linguistic'],
     license='GNU General Public License v3 or greater',
+    install_requires=['six'],
     classifiers=[
                 'Development Status :: 5 - Production/Stable',
                 'Intended Audience :: Science/Research',
