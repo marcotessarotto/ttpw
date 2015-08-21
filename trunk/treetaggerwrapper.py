@@ -95,8 +95,8 @@ Usage
 
 Primary usage is to wrap TreeTagger binary and use it as a functional tool.
 You have to build a :class:`TreeTagger` object, specifying the target
-language and possibly some other TreeTagger parameters (else we use
-standard files specified in the module for each supported language).
+language [by its country code!], and possibly some other TreeTagger parameters
+(else we use standard files specified in the module for each supported language).
 Once this wrapper object created, you can simply call its :any:`tag_text()`
 method with the string to tag, and it will return a list of lines corresponding
 to the text tagged by TreeTagger.
@@ -2143,6 +2143,10 @@ TreeTagger, and write TreeTagger output to files with .{RESEXT} extension.
 
 Read all data from the input stream, then preprocess it, send it to
 TreeTagger, and write  TreeTagger output to output stream.
+
+Can be used with shell pipes, like this (adapt encoding to your console):
+
+    echo "This is the sentence." | python -m treetaggerwrapper -e utf8 --pipe
 
 Options:
     -p          preprocess only (no tagger)
