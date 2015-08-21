@@ -36,12 +36,12 @@ files via options.
 This version has been reworked to run with Python2 and Python3 (thanks so six)
 and globally reworked, bugs fixed.
 
-Module provide docstring documentation for use of the main class and its
-methods, it is exported in a readable format at `Read the Docs`_.
+**Documentation** is available on `Read the Docs`_
+(and module provides docstrings).
 
 .. _Read the Docs: http://treetaggerwrapper.readthedocs.org/
 
-Subversion repository is on french academic `Sourcesup`_ site.
+**Subversion repository** is on french academic `Sourcesup`_ site.
 
 .. _Sourcesup: https://sourcesup.cru.fr/scm/browser.php?group_id=647
 

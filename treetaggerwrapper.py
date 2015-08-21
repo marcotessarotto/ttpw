@@ -79,7 +79,7 @@ The wrapper search for a treetagger directory (allowing variations in name)
 in different locations from user home directory to host-wide directories.
 If the treetagger directory is found, its location is stored in a file
 :file:`$HOME/.config/treetagger_location` (following 
-:envvar:`XFG_CONFIG_DIR` if it is specified),
+:envvar:`XDG_CONFIG_DIR` if it is specified),
 and at next start the directory indicated in this file is used if it 
 still exists.
 
