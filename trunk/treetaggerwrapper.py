@@ -77,7 +77,8 @@ Once this wrapper object created, you can simply call its :any:`tag_text()`
 method with the string to tag, and it will return a list of lines corresponding
 to the text tagged by TreeTagger.
 
-Example::
+Example (with Python3, **Unicode strings** by default — with Python2 you
+need to use explicit notation ``u"string"``)::
 
     >>> import pprint   # For proper print of sequences.
     >>> import treetaggerwrapper
