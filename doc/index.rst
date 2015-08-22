@@ -6,8 +6,8 @@
    install a local sphinx with: pip install --user --upgrade sphinx
 
 
-Welcome to TreeTagger Python Wrapper's documentation!
-=====================================================
+TreeTagger Python Wrapper's documentation!
+==========================================
 
 .. toctree::
    :maxdepth: 2
@@ -31,8 +31,24 @@ Welcome to TreeTagger Python Wrapper's documentation!
 
 .. autofunction:: make_tags
 
+Multithread tools
+-----------------
+
+.. autoclass:: TaggerPoll
+
+  .. automethod:: tag_text_async
+  .. automethod:: tag_file_async
+  .. automethod:: tag_file_to_async
+  .. automethod:: stop_poll
+
+.. autoclass:: Job
+
+  .. automethod:: wait_finished
+
 Extra functions
 ---------------
+
+Some functions can be of interest, eventually for another project.
 
 ..
     Separated from main content as this is les important and dont have
