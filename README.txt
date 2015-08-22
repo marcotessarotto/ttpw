@@ -43,7 +43,7 @@ and globally reworked, bugs fixed.
 
 **Subversion repository** is on french academic `Sourcesup`_ site.
 
-.. _Sourcesup: https://sourcesup.cru.fr/scm/browser.php?group_id=647
+.. _Sourcesup: https://sourcesup.cru.fr/sntm/browser.php?group_id=647
 
 You can also see treetagger wrapper `developer page`_.
 
