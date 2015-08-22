@@ -8,7 +8,7 @@ About treetaggerwrapper
 :organization: CNRS - LIMSI
 :copyright: CNRS - 2004-2015
 :license: GNU-GPL Version 3 or greater
-:version: 2.1.0
+:version: 2.1.1
 
 For language independent part-of-speech tagger TreeTagger, 
 see `Helmut Schmid TreeTagger site`_.
@@ -316,7 +316,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.1.0'
+__version__ = '2.1.1'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
@@ -2189,7 +2189,11 @@ class TaggerPoll(object):
         Parallel processing via threads in Python within the same
         process is limited due to the global interpreter lock
         (Python's GIL).
-        See multiprocessing for real parallel process.
+        See multiprocessing for real parallel process
+        (I may sometime transform TaggerPool to a multiprocessing
+        tool — as chunking took a large part of processing and it is
+        done in Python, so under the GIL, overall performance gain
+        with threading is not excellent).
 
     **Example of use**
 
