@@ -28,9 +28,7 @@ This wrapper tool is intended to be used in larger projects, where multiple
 chunk of texts must be processed via TreeTagger (else you may simply use the
 base TreeTagger installation as an external command).
 
-Note: Documentation generation uses sphinx with some of its 1.3 options.
-
-.. important:: Module evolution
+.. warning:: Incompatible module evolutions with version 2.0 on august 20 2015
 
    See :ref:`important modifications notes` below !
 
@@ -153,6 +151,11 @@ ask for module help::
 
     python treetaggerwrapper.py --help
 
+If available within :envvar:`PYTHONPATH`, the module can also be called
+from anywhere with the :option:`-m` Python option::
+
+    python -m treetaggerwrapper --help
+
 
 .. _important modifications notes:
 
@@ -219,6 +222,12 @@ This module does two main things
 
 Supported languages
 ...................
+
+.. note:: Encoding specification
+
+   When specifying language with treetaggerwrapper, we use the the two
+   chars language codes, not the complete language name.
+
 
 This module support chunking + tagging for languages:
 
