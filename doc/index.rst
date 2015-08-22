@@ -31,8 +31,8 @@ TreeTagger Python Wrapper's documentation!
 
 .. autofunction:: make_tags
 
-Multithread tools
------------------
+Polls of taggers
+----------------
 
 .. autoclass:: TaggerPoll
 
