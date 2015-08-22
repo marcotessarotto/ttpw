@@ -80,6 +80,15 @@ into the directory where you want to install TreeTagger, including the installat
 script, and then launch the script to unzip and install right files in right
 directories.
 
-If you install TreeTagger in a common place, there is normally a working autodetection.
+For *Windows* users, there is a downloadable Windows binary, but no install script.
+You have to download TreeTagger parameter files (since TreeTagger goes utf-8 they
+are same on Linux and Windows), unzip them and install them in the right
+place (``lib/``), with the right names (you can see these files names in
+``treetaggerwrapper.py`` global dictionnary ``g_langsupport``,
+in keys ``tagparfile`` and ``abbrevfile``.
+
+If you install TreeTagger in a common place, there is normally a working autodetection
+within :mod:`treetaggerwrapper`.
 But if you install it in a special place or with a special name, you will have
 to provide this installation directory to the module (see ``TAGDIR`` in the doc).
+

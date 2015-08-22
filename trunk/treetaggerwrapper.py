@@ -8,6 +8,7 @@ Python wrapper for TreeTagger
 :organization: CNRS - LIMSI
 :copyright: CNRS - 2004-2015
 :license: GNU-GPL Version 3 or greater
+:version: 2.0.5
 
 For language independent part-of-speech tagger TreeTagger, 
 see `Helmut Schmid TreeTagger site`_.
