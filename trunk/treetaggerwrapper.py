@@ -353,6 +353,9 @@ DEBUG = 0
 # Set to enable preprocessing specific debugging code.
 DEBUG_PREPROCESS = 0
 
+# Set to enable multithreading specific debugging code.
+DEBUG_MULTITHREAD = 0
+
 # Extension added to result files when using command-line.
 # (TreeTagger result => ttr)
 RESEXT = "ttr"
@@ -765,7 +768,7 @@ class TreeTagger(object):
     :type   repldnsexp: string
     :ivar   tagpopen: TreeTagger process control tool.
     :type   tagpopen: Popen
-    :ivar   taginput: pipe to write to TreeTagger input. Set whe opening pipe.
+    :ivar   taginput: pipe to write to TreeTagger input. Set when opening pipe.
     :type   taginput: write stream
     :ivar   tagoutput: pipe to read from TreeTagger input. Set whe opening
                     pipe.
@@ -2205,7 +2208,7 @@ class TaggerPoll(object):
             print("\tJob", i)
             res.append(p.tag_text_async(text))
         print("Waiting for jobs to be completed")
-        for r in res:
+        for i, r in enumerate(res):
             print("\tJob", i)
             r.wait_finished()
             print(r.result)
@@ -2228,21 +2231,37 @@ class TaggerPoll(object):
             workerscount = multiprocessing.cpu_count()
         if taggerscount is None:
             taggerscount = multiprocessing.cpu_count()
+        # Security, we need at least one worker and one tagger.
+        if taggerscount < 1:
+            raise ValueError("Invalid taggerscount %s", taggerscount)
+        if workerscount < 1:
+            raise ValueError("Invalid workerscount %s", workerscount)
+
+        if DEBUG_MULTITHREAD:
+            logger.debug("Creating TaggerPoll, %d workers, %d taggers",
+                         workerscount,taggerscount )
 
         self._stopping = False
         self._workers = []
-        self._waittagger = queue.Queue()
+        self._waittaggers = queue.Queue()
         self._waitjobs = queue.Queue()
 
         self._build_taggers(taggerscount, kwargs)
         self._build_workers(workerscount)
 
+        if DEBUG_MULTITHREAD:
+            logger.debug("TaggerPoll ready")
+
     def _build_taggers(self, taggerscount, taggerargs):
+        if DEBUG_MULTITHREAD:
+            logger.debug("Creating taggers for TaggerPoll")
         for i in range(taggerscount):
             tt = TreeTagger(**taggerargs)
-            self._waittagger.put(tt)
+            self._waittaggers.put(tt)
 
     def _build_workers(self, workerscount):
+        if DEBUG_MULTITHREAD:
+            logger.debug("Creating workers for TaggerPoll")
         for i in range(workerscount):
             th = threading.Thread(target=self._worker_main)
             th.daemon = True
@@ -2253,15 +2272,23 @@ class TaggerPoll(object):
         if self._stopping:
             raise TreeTaggerError("TaggerPoll is stopped working.")
         job = Job(self, methname, kwargs)
+        if DEBUG_MULTITHREAD:
+            logger.debug("Job %d created, queuing it", id(job))
         self._waitjobs.put(job)
         return job
 
     def _worker_main(self):
         while True:
+            if DEBUG_MULTITHREAD:
+                logger.debug("Worker waiting for job to pick…")
             job = self._waitjobs.get()  # Pickup a job.
             if job is None:
+                if DEBUG_MULTITHREAD:
+                    logger.debug("Worker finishing")
                 break   # Put Nones in jobs queue to stop workers.
-            job()                       # Do the job
+            if DEBUG_MULTITHREAD:
+                logger.debug("Worker doing picked job %d", id(job))
+            job._execute()                       # Do the job
 
     def stop_poll(self):
         """Properly stop a :class:`TaggerPoll`.
@@ -2271,19 +2298,28 @@ class TaggerPoll(object):
 
         Once called, the :class:`TaggerPoll` is no longer usable.
         """
-        if self._stopping:          # Just stop one time.
-            return
-        self._stopping = True       # Prevent more Jobs to be queued.
-        # Put one None by thread (will awake threads).
-        for x in range(len(self._workers)):
-            self._waitjobs.put(None)
+        if DEBUG_MULTITHREAD:
+            logger.debug("TaggerPoll stopping")
+        if not self._stopping:          # Just stop one time.
+            if DEBUG_MULTITHREAD:
+                logger.debug("Signaling to threads")
+            self._stopping = True       # Prevent more Jobs to be queued.
+            # Put one None by thread (will awake threads).
+            for x in range(len(self._workers)):
+                self._waitjobs.put(None)
         # Wait for threads to be finished.
         for th in self._workers:
+            if DEBUG_MULTITHREAD:
+                logger.debug("Signaling to thread %s (%d)", th.name, id(th))
             th.join()
         # Remove refs to threads.
-        del self._workers
+        if hasattr(self, '_workers'):
+            del self._workers
         # Remove references to TreeTagger objects.
-        del self._waittagger
+        if hasattr(self, '_waittaggers'):
+            del self._waittaggers
+        if DEBUG_MULTITHREAD:
+            logger.debug("TaggerPoll stopped")
 
     #---------------------------------------------------------------------------
     # Below methods have same interface than TreeTagger to tag texts.
@@ -2364,18 +2400,29 @@ class Job(object):
         self._finished = False
         self._result = None
 
-    def __call__(self):
+    def _execute(self):
         # Pickup a tagger.
-        tagger = self._poll._waittagger.get()
-        meth = getattr(tagger, self._methname)
+        logger.debug("Job %d waitin for a tagger", id(self))
+        tagger = self._poll._waittaggers.get()
+        if DEBUG_MULTITHREAD:
+            logger.debug("Job %d picked tagger %d for %s", id(self),
+                         id(tagger), self._methname)
         try:
+            meth = getattr(tagger, self._methname)
             self._result = meth(**self._kwargs)
         except Exception as e:
+            if DEBUG_MULTITHREAD:
+                logger.debug("Job %d exit with exception", id(self))
             self._result = e
         # Release the tagger, signal the Job end of processing.
-        self._poll._waittagger.put(tagger)
+        if DEBUG_MULTITHREAD:
+            logger.debug("Job %d give back tagger %d", id(self),
+                         id(tagger))
+        self._poll._waittaggers.put(tagger)
         self._finished = True
         self._event.set()
+        if DEBUG_MULTITHREAD:
+            logger.debug("Job %d finished", id(self))
 
     @property
     def finished(self):
