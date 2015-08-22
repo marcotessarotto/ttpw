@@ -88,7 +88,7 @@ place (``lib/``), with the right names (you can see these files names in
 in keys ``tagparfile`` and ``abbrevfile``.
 
 If you install TreeTagger in a common place, there is normally a working autodetection
-within :mod:`treetaggerwrapper`.
+within ``treetaggerwrapper``.
 But if you install it in a special place or with a special name, you will have
 to provide this installation directory to the module (see ``TAGDIR`` in the doc).
 
