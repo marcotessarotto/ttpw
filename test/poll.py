@@ -11,11 +11,11 @@ import treetaggerwrapper as ttpw
 #ttpw.enable_debugging_log()
 
 p = ttpw.TaggerPoll()
-JOBSCOUNT = 100
+JOBSCOUNT = 10000
 res = []
 
 text = "This is Mr John's own house, it's very nice."
-text = io.open("data/notevoltcond.txt", encoding='utf-8').read()
+#text = io.open("data/notevoltcond.txt", encoding='utf-8').read()
 
 print("Creating jobs")
 for i in range(JOBSCOUNT):
