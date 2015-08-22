@@ -8,7 +8,7 @@ About treetaggerwrapper
 :organization: CNRS - LIMSI
 :copyright: CNRS - 2004-2015
 :license: GNU-GPL Version 3 or greater
-:version: 2.0.6
+:version: 2.1.0
 
 For language independent part-of-speech tagger TreeTagger, 
 see `Helmut Schmid TreeTagger site`_.
@@ -205,6 +205,9 @@ modifications imply modifications in users code.
   If you need multiple parallel processing, you can create multiple :class:`TreeTagger`
   objects, put them in a poll, and work with them from different threads.
 
+- Support polls of taggers for optimal usage on multi-core computers.
+  See :class:`TaggerPoll` class.
+
 Processing
 ----------
 
@@ -313,7 +316,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.0.6'
+__version__ = '2.1.0'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
@@ -2162,17 +2165,18 @@ def make_tags(result, exclude_nottags=False):
 class TaggerPoll(object):
     """Keep a poll of TreeTaggers for processing with different threads.
 
-    This class rely only on Python2 & 3 available tools, it's here
-    fot people most adept of natural language processing than multithreading
-    programming…
+    This class is here for people preferring natural language processing
+    over multithread programming… :-)
 
-    We manage a poll of threads, able to do parallel chunking, and a poll of
-    taggers, able to do (more real) parallel tagging.
+    Each poll manage a set of threads, able to do parallel chunking, and a
+    set of taggers, able to do (more real) parallel tagging.
+    All taggers in the same poll are created for same processing (with
+    same options).
 
     :class:`TaggerPoll` objects has same high level interface than :class:`TreeTagger`
-    ones with ``_async`` at end of methos names.
-    Each of asynch method return a :class:`Job` object allowing to know if
-    processing is finished, wait for it, and get the result.
+    ones with ``_async`` at end of methods names.
+    Each of …_asynch method returns a :class:`Job` object allowing to know if
+    processing is finished, to wait for it, and to get the result.
 
     If you want to **properly terminate** a :class:`TaggerPoll`, you must
     call its :func:`TaggerPoll.stop_poll` method.
@@ -2183,6 +2187,30 @@ class TaggerPoll(object):
         process is limited due to the global interpreter lock
         (Python's GIL).
         See multiprocessing for real parallel process.
+
+    **Example of use**
+
+    In this example no parameter is given to the poll, it auto-adapt
+    to the count of CPU cores.
+
+    .. code:: python
+
+        import treetaggerwrapper as ttpw
+        p = ttpw.TaggerPoll()
+
+        res = []
+        text = "This is Mr John's own house, it's very nice."
+        print("Creating jobs")
+        for i in range(10):
+            print("\tJob", i)
+            res.append(p.tag_text_async(text))
+        print("Waiting for jobs to be completed")
+        for r in res:
+            print("\tJob", i)
+            r.wait_finished()
+            print(r.result)
+        p.stop_poll()
+        print("Finished")
     """
     def __init__(self, workerscount=None, taggerscount=None, **kwargs):
         """Creation of a new TaggerPoll.
@@ -2238,7 +2266,7 @@ class TaggerPoll(object):
     def stop_poll(self):
         """Properly stop a :class:`TaggerPoll`.
 
-        Take care of finishing waiting threads, and deleting TreeTagger
+        Takes care of finishing waiting threads, and deleting TreeTagger
         objects (removing pipes connexions to treetagger process).
 
         Once called, the :class:`TaggerPoll` is no longer usable.
@@ -2265,8 +2293,10 @@ class TaggerPoll(object):
                  notagemail=False, notagip=False, notagdns=False,
                  nosgmlsplit=False):
         """
+        See :func:`TreeTagger.tag_text` method and :class:`TaggerPoll` doc.
 
-        See :func:`TreeTagger.tag_text` method.
+        :return: a :class:`Job` object about the async process.
+        :rtype: :class:`Job`
         """
         return self._create_job('tag_text', text=text, numlines=numlines,
                                 tagonly=tagonly, prepronly=prepronly,
@@ -2281,8 +2311,10 @@ class TaggerPoll(object):
                  notagemail=False, notagip=False, notagdns=False,
                  nosgmlsplit=False):
         """
+        See :func:`TreeTagger.tag_file` method and :class:`TaggerPoll` doc.
 
-        See :func:`TreeTagger.tag_file` method.
+        :return: a :class:`Job` object about the async process.
+        :rtype: :class:`Job`
         """
         return self._create_job('tag_file', infilepath=infilepath,
                                 encoding=encoding, numlines=numlines,
@@ -2298,8 +2330,10 @@ class TaggerPoll(object):
                     notagemail=False, notagip=False, notagdns=False,
                     nosgmlsplit=False):
         """
+        See :func:`TreeTagger.tag_file_to` method and :class:`TaggerPoll` doc.
 
-        See :func:`TreeTagger.tag_file_to` method.
+        :return: a :class:`Job` object about the async process.
+        :rtype: :class:`Job`
         """
         return self._create_job('tag_file_to', infilepath=infilepath,
                                 outfilepath=outfilepath,
@@ -2455,6 +2489,10 @@ def main(*args):
     See command line usage help with::
 
       python treetaggerwrapper.py --help
+
+    or::
+
+        python -m treetaggerwrapper --help
     """
     if args and args[0].lower() in ("-h", "h", "--help", "-help", "help",
                                     "--aide", "-aide", "aide", "?"):
