@@ -174,7 +174,7 @@ modifications imply modifications in users code.
 
 - Work with Python2 and Python3, with same code.
 
-- Use **Unicode strings** internally (its no more possible to provide 
+- Use **Unicode strings** internally (it's no more possible to provide
   binary strings and their encoding as separated 
   parameters - you have to decode the strings yourself before).
 
@@ -189,7 +189,7 @@ modifications imply modifications in users code.
   if you use such encoding - previously it was the default).
 
 - **Guess TreeTagger location** — you can still provide :envvar:`TAGDIR` as env var
-  or as :class:`TreeTagger` parameter, but its no more necessary.
+  or as :class:`TreeTagger` parameter, but it's no more necessary.
   Found directory is cached in :file:`treetagger_wrapper.cfg` configuration
   file to only guess once.
 
@@ -892,7 +892,7 @@ class TreeTagger(object):
         # Not in previous else to manage None parameter in kargs.
         if self.tagparfile is None:
             self.tagparfile = self.langsupport["tagparfile"]
-        # If its directly a visible file, then use it, else try to locate
+        # If it's directly a visible file, then use it, else try to locate
         # it in TreeTagger library directory.
         maybefile = os.path.abspath(self.tagparfile)
         if os.path.isfile(maybefile):
@@ -956,7 +956,7 @@ class TreeTagger(object):
         # Not in previous else to manage None parameter in kargs.
         if self.abbrevfile is None:
             self.abbrevfile = self.langsupport["abbrevfile"]
-        # If its directly a visible file, then use it, else try to locate
+        # If it's directly a visible file, then use it, else try to locate
         # it in TreeTagger library directory.
         maybefile = os.path.abspath(self.abbrevfile)
         if os.path.isfile(maybefile):
@@ -1551,7 +1551,7 @@ class TreeTagger(object):
                 if matchobj.group() == part[:-1] and part[-1] == ".":
                     part = part[:-1]  # Validate next if... process number.
                     suffix.insert(0, FinalPart("."))
-                if matchobj.group() == part:  # Its a *full* number.
+                if matchobj.group() == part:  # It's a *full* number.
                     if DEBUG_PREPROCESS: logger.debug("Found number: %r", part)
                     newparts.extend(prefix)
                     newparts.append(FinalPart(part))
@@ -1665,7 +1665,7 @@ def is_sgml_tag(text):
 
     :param  text: the text to test.
     :type  text: string
-    :return: True if its an SGML tag.
+    :return: True if it's an SGML tag.
     :rtype: boolean
     """
     return SGML_tag_re.match(text) is not None
@@ -1784,7 +1784,7 @@ def blank_to_space(text):
 #                                     #  which may match hexa number too (bad) )
 # """
 # 2004-08-30 - LP
-# As IP V6 can interfer with :: in copy/past code, and as its (currently)
+# As IP V6 can interfer with :: in copy/past code, and as it's (currently)
 # not really common, I comment out the IP V6 recognition.
 Ip_expression = r"""
     (?:                         # ----- Classic dotted IP V4 address -----
