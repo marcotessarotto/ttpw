@@ -8,7 +8,7 @@ import io
 
 setup(
     name='treetaggerwrapper',
-    version='2.0.5',
+    version='2.0.6',
     author='Laurent Pointal',
     author_email='laurent.pointal@limsi.fr',
     url='http://perso.limsi.fr/pointal/dev:treetaggerwrapper',
