@@ -59,7 +59,7 @@ As the module is now registered on `PyPI`_, you can simply install it::
 
   pip install treetaggerwrapper
 
-Or, if you cant (or don't want) to install the module system-wide (and don't
+Or, if you can't (or don't want) to install the module system-wide (and don't
 use a `virtual env`_)::
 
    pip install --user treetaggerwrapper
@@ -82,7 +82,7 @@ directory listed in the Python path (or in your scripts directory).
 The wrapper search for a treetagger directory (allowing variations in name)
 in different locations from user home directory to host-wide directories.
 If the treetagger directory is found, its location is stored in a file
-:file:`$HOME/.config/treetagger_location` (following 
+:file:`$HOME/.config/treetagger_wrapper.cfg` (or any place following
 :envvar:`XDG_CONFIG_DIR` if it is specified),
 and at next start the directory indicated in this file is used if it 
 still exists.
@@ -844,9 +844,9 @@ class TreeTagger(object):
             if founddir:
                 self.tagdir = founddir
             else:
-                logger.error("Cant locate TreeTagger directory (and "
+                logger.error("Can't locate TreeTagger directory (and "
                              "no TAGDIR specified).")
-                raise TreeTaggerError("Cant locate TreeTagger directory (and "
+                raise TreeTaggerError("Can't locate TreeTagger directory (and "
                                       "no TAGDIR specified).")
         self.tagdir = os.path.abspath(self.tagdir)
         if not os.path.isdir(self.tagdir):
