@@ -1,8 +1,8 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 r"""
-Python wrapper for TreeTagger 
-=============================
+About treetaggerwrapper
+=======================
 
 :author: Laurent Pointal <laurent.pointal@limsi.fr> <laurent.pointal@laposte.net>
 :organization: CNRS - LIMSI
@@ -203,7 +203,7 @@ modifications imply modifications in users code.
 - Can be used in **multithreading** context (pipe communications with TreeTagger
   are protected by a Lock, preventing concurrent access).
   If you need multiple parallel processing, you can create multiple :class:`TreeTagger`
-  objects, put them in a pool, and work with them from different threads.
+  objects, put them in a poll, and work with them from different threads.
 
 Processing
 ----------
@@ -330,9 +330,11 @@ import getopt
 import glob
 import io
 import logging
+import multiprocessing
 import os
 import os.path as osp
 import platform
+from six.moves import queue
 import re
 import shlex
 import six
@@ -2154,6 +2156,205 @@ def make_tags(result, exclude_nottags=False):
         else:
             newres.append(Tag(*items))
     return newres
+
+
+# ==============================================================================
+class TaggerPoll(object):
+    """Keep a poll of TreeTaggers for processing with different threads.
+
+    This class rely only on Python2 & 3 available tools, it's here
+    fot people most adept of natural language processing than multithreading
+    programming…
+
+    We manage a poll of threads, able to do parallel chunking, and a poll of
+    taggers, able to do (more real) parallel tagging.
+
+    :class:`TaggerPoll` objects has same high level interface than :class:`TreeTagger`
+    ones with ``_async`` at end of methos names.
+    Each of asynch method return a :class:`Job` object allowing to know if
+    processing is finished, wait for it, and get the result.
+
+    If you want to **properly terminate** a :class:`TaggerPoll`, you must
+    call its :func:`TaggerPoll.stop_poll` method.
+
+    .. note::
+
+        Parallel processing via threads in Python within the same
+        process is limited due to the global interpreter lock
+        (Python's GIL).
+        See multiprocessing for real parallel process.
+    """
+    def __init__(self, workerscount=None, taggerscount=None, **kwargs):
+        """Creation of a new TaggerPoll.
+
+        By default a :class:`TaggerPoll` creates same count of threads and
+        of TreeTagger objects than there are CPU cores on your computer.
+
+        :param workerscount: number of worker threads to create.
+        :type workerscount: int
+        :param taggerscount: number of TreeTaggers objects to create.
+        :type taggerscount: int
+        :param kwargs: same parameters as :func:`TreeTagger.__init__`.
+        """
+        if workerscount is None:
+            workerscount = multiprocessing.cpu_count()
+        if taggerscount is None:
+            taggerscount = multiprocessing.cpu_count()
+
+        self._stopping = False
+        self._workers = []
+        self._waittagger = queue.Queue()
+        self._waitjobs = queue.Queue()
+
+        self._build_taggers(taggerscount, kwargs)
+        self._build_workers(workerscount)
+
+    def _build_taggers(self, taggerscount, taggerargs):
+        for i in range(taggerscount):
+            tt = TreeTagger(**taggerargs)
+            self._waittagger.put(tt)
+
+    def _build_workers(self, workerscount):
+        for i in range(workerscount):
+            th = threading.Thread(target=self._worker_main)
+            th.daemon = True
+            self._workers.append(th)
+            th.start()
+
+    def _create_job(self, methname, **kwargs):
+        if self._stopping:
+            raise TreeTaggerError("TaggerPoll is stopped working.")
+        job = Job(self, methname, kwargs)
+        self._waitjobs.put(job)
+        return job
+
+    def _worker_main(self):
+        while True:
+            job = self._waitjobs.get()  # Pickup a job.
+            if job is None:
+                break   # Put Nones in jobs queue to stop workers.
+            job()                       # Do the job
+
+    def stop_poll(self):
+        """Properly stop a :class:`TaggerPoll`.
+
+        Take care of finishing waiting threads, and deleting TreeTagger
+        objects (removing pipes connexions to treetagger process).
+
+        Once called, the :class:`TaggerPoll` is no longer usable.
+        """
+        if self._stopping:          # Just stop one time.
+            return
+        self._stopping = True       # Prevent more Jobs to be queued.
+        # Put one None by thread (will awake threads).
+        for x in range(len(self._workers)):
+            self._waitjobs.put(None)
+        # Wait for threads to be finished.
+        for th in self._workers:
+            th.join()
+        # Remove refs to threads.
+        del self._workers
+        # Remove references to TreeTagger objects.
+        del self._waittagger
+
+    #---------------------------------------------------------------------------
+    # Below methods have same interface than TreeTagger to tag texts.
+    # --------------------------------------------------------------------------
+    def tag_text_async(self, text, numlines=False, tagonly=False,
+                 prepronly=False, tagblanks=False, notagurl=False,
+                 notagemail=False, notagip=False, notagdns=False,
+                 nosgmlsplit=False):
+        """
+
+        See :func:`TreeTagger.tag_text` method.
+        """
+        return self._create_job('tag_text', text=text, numlines=numlines,
+                                tagonly=tagonly, prepronly=prepronly,
+                                tagblanks=tagblanks, notagurl=notagurl,
+                                notagemail=notagemail, notagip=notagip,
+                                notagdns=notagdns, nosgmlsplit=nosgmlsplit)
+
+    # --------------------------------------------------------------------------
+    def tag_file_async(self, infilepath, encoding=USER_ENCODING,
+                 numlines=False, tagonly=False,
+                 prepronly=False, tagblanks=False, notagurl=False,
+                 notagemail=False, notagip=False, notagdns=False,
+                 nosgmlsplit=False):
+        """
+
+        See :func:`TreeTagger.tag_file` method.
+        """
+        return self._create_job('tag_file', infilepath=infilepath,
+                                encoding=encoding, numlines=numlines,
+                                tagonly=tagonly, prepronly=prepronly,
+                                tagblanks=tagblanks, notagurl=notagurl,
+                                notagemail=notagemail, notagip=notagip,
+                                notagdns=notagdns, nosgmlsplit=nosgmlsplit)
+
+    # --------------------------------------------------------------------------
+    def tag_file_to_async(self, infilepath, outfilepath, encoding=USER_ENCODING,
+                    numlines=False, tagonly=False,
+                    prepronly=False, tagblanks=False, notagurl=False,
+                    notagemail=False, notagip=False, notagdns=False,
+                    nosgmlsplit=False):
+        """
+
+        See :func:`TreeTagger.tag_file_to` method.
+        """
+        return self._create_job('tag_file_to', infilepath=infilepath,
+                                outfilepath=outfilepath,
+                                encoding=encoding, numlines=numlines,
+                                tagonly=tagonly, prepronly=prepronly,
+                                tagblanks=tagblanks, notagurl=notagurl,
+                                notagemail=notagemail, notagip=notagip,
+                                notagdns=notagdns, nosgmlsplit=nosgmlsplit)
+
+class Job(object):
+    """Asynchronous job to process a text with a Tagger.
+
+    These objects are automatically created for you and returned by
+    :class:`TaggerPoll` methods :func:`TaggerPoll.tag_text_async`,
+    :func:`TaggerPoll.tag_file_async` and :func:`TaggerPoll.tag_file_to_async`.
+
+    You use them to know status of the asynchronous request, eventually
+    wait for it to be finished, and get the final result.
+
+    :ivar finished: Boolean indicator of job termination.
+    :ivar result: Final job processing result — or exception.
+    """
+    def __init__(self, poll, methname, kwargs):
+        self._poll = poll
+        self._methname = methname
+        self._kwargs = kwargs
+        self._event = threading.Event()
+        self._finished = False
+        self._result = None
+
+    def __call__(self):
+        # Pickup a tagger.
+        tagger = self._poll._waittagger.get()
+        meth = getattr(tagger, self._methname)
+        try:
+            self._result = meth(**self._kwargs)
+        except Exception as e:
+            self._result = e
+        # Release the tagger, signal the Job end of processing.
+        self._poll._waittagger.put(tagger)
+        self._finished = True
+        self._event.set()
+
+    @property
+    def finished(self):
+        return self._finished
+
+    def wait_finished(self):
+        """Lock on the Job event signaling its termination.
+        """
+        self._event.wait()
+
+    @property
+    def result(self):
+        return self._result
 
 
 # ==============================================================================
