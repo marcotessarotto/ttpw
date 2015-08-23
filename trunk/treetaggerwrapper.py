@@ -786,8 +786,10 @@ class TreeTagger(object):
         """ Construction of a wrapper for a TreeTagger process.
 
         You can specify several parameters at construction time.
-        These parameters can be set via environment variables too.
-        Most of them have default values.
+        These parameters can be set via environment variables too
+        (except for CHUNKERPROC).
+        All of them have standard default values, even TAGLANG
+        default to tagging english.
 
         :keyword TAGLANG: language code for texts ('en','fr',...)
                           (default to 'en').
@@ -1066,6 +1068,9 @@ class TreeTagger(object):
         # ----- External chunking proc
         if "CHUNKERPROC" in kargs:
             self.chunkerproc = kargs["CHUNKERPROC"]
+            if not callable(self.chunkerproc):
+                logger.error("Chunker function in CHUNKERPROC is not callable.")
+                raise TreeTaggerError("Chunker function in CHUNKERPROC is not callable.")
         else:
             self.chunkerproc = None
 
