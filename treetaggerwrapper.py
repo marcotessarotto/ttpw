@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 r"""
 About treetaggerwrapper
@@ -231,7 +231,6 @@ Supported languages
    When specifying language with treetaggerwrapper, we use the the two
    chars language codes, not the complete language name.
 
-
 This module support chunking + tagging for languages:
 
 - spanish (es)
@@ -254,13 +253,17 @@ It can be used for tagging only for languages:
 - slovak (sk')
 - swahili (sw)
 
-
 Note: chunking parameters have not been adapted to these language 
 and their specific features, you may try to chunk… with no guaranty.
 If you have an external chunker, you can call the tagger with
 option ``tagonly`` set to True, you should then provide a simple
 string with one token by line (or list of strings with one token
 by item).
+If you chunker is a callable, you can provide your own chunking function
+with :option:`CHUNKERPROC` named when constructing :class:`TreeTagger`
+object, and then use it normally (your function is called in place of
+standard chunking).
+
 
 For all these languages, the wrapper use standard filenames for
 TreeTagger's parameter and abbreviation files. 
@@ -775,6 +778,8 @@ class TreeTagger(object):
     :type   tagoutput: read stream
     :ivar   taggerlock: synchronization tool for multuthread use of the object.
     :type   taggerlock: threading.Lock
+    :ivar   chunkerproc: external function for chunking.
+    :type   chunkerproc: fct(tagger, ['text']) => ['chunk']
     """
     # --------------------------------------------------------------------------
     def __init__(self, **kargs):
@@ -815,6 +820,18 @@ class TreeTagger(object):
                                output, strict or ignore or replace -
                                default to replace.
         :type TAGOUTENCERR:    str
+        :keyword CHUNKERPROC: function to call for chunking in place of
+                            wrapper's chunking — default to None (use
+                            standard chunking).
+                            Take the TreeTagger object as
+                            first parameter and a list of str to chunk as
+                            second parameter. Must return a list of chunk str
+                            (tokens).
+                            Note that normal initialization of chunking
+                            parameters is done even with an external chunking
+                            function, so these parameters are available
+                            for this function.
+        :type CHUNKERPROC: fct(tagger, ['text']) => list ['chunk']
         :return: None
         """
         # Get data in different place, setup context for pre-processing and
@@ -1046,6 +1063,12 @@ class TreeTagger(object):
         self.replipexp = self.langsupport["replipexp"]
         self.repldnsexp = self.langsupport["repldnsexp"]
 
+        # ----- External chunking proc
+        if "CHUNKERPROC" in kargs:
+            self.chunkerproc = kargs["CHUNKERPROC"]
+        else:
+            self.chunkerproc = None
+
     # --------------------------------------------------------------------------
     def _start_process(self):
         """Start TreeTagger processing chain.
@@ -1189,15 +1212,19 @@ class TreeTagger(object):
         # Preprocess text (prepare for TreeTagger).
         if not tagonly:
             logger.debug("Pre-processing text.")
-            lines = self._prepare_text(text, tagblanks=tagblanks, numlines=numlines,
+            if self.chunkerproc is None:
+                lines = self._prepare_text(text, tagblanks=tagblanks, numlines=numlines,
                                        notagurl=notagurl, notagemail=notagemail,
                                        notagip=notagip, notagdns=notagdns,
                                        nosgmlsplit=nosgmlsplit)
+            else:
+                # Let external chunker proc do the job.
+                lines = self.chunkerproc(self, text)
         else:
             # Adapted to support list of lines.
             # And do split on end of lines, not on spaces (ie if we don't prepare the
             # text, we can consider that it has been prepared elsewhere by caller,
-            # and that there is only one token item by line for TreeTagger).
+            # and there is only one token item by line for TreeTagger).
             lines = []
             for l in text:
                 lines.extend(l.splitlines())
@@ -2468,6 +2495,7 @@ Options:
     -e enc      encoding used for user data (default to {USER_ENCODING})
 
 Other options:
+    --version               print script version and exit.
     --ttparamfile fic       file to use as TreeTagger parameter file.
     --ttoptions "options"   TreeTagger specific options (cumulated).
     --abbreviations fic     file to use as abbreviations terms.
@@ -2559,7 +2587,7 @@ def main(*args):
     notagemail = notagip = notagdns = nosgmlsplit = False
     tagbuildopt = {}
     try:
-        optlist, args = getopt.getopt(args, 'ptnl:d:be:', ["abbreviations=",
+        optlist, args = getopt.getopt(args, 'ptnl:d:be:', ["version", "abbreviations=",
                                                        "ttparamfile=", "ttoptions=", "pipe",
                                                        "ttinencoding=", "ttoutencoding=",
                                                        "ttinencerr=", "ttoutencerr=",
@@ -2623,6 +2651,10 @@ def main(*args):
             notagdns = True
         elif opt == "--nosgmlsplit":
             nosgmlsplit = True
+        elif opt == "--version":
+            print("treetaggerwrapper.py", __version__)
+            sys.exit(0)
+
     # Find files to process.
     files = []
     for f in args:
