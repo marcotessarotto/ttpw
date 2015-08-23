@@ -2513,21 +2513,22 @@ your text tags... with bad result on tags recognition by regular expression).
 
 Examples with pipe:
 
-One installed in the PYTHONPATH, the module can be used from anywhere
+Once installed in the PYTHONPATH, the module can be used from anywhere
 Using Python -m option. Combined with pipe, you can easily do some tests
-(adapt encoding to your console):
+(console encoding is detected if possible, default to {USER_ENCODING} if
+not detected ; can use -e option to change):
 
 To preprocess and tag a small text:
 
-    echo "This is the sentence." | python -m treetaggerwrapper -e utf8 --pipe
+    echo "This is the sentence." | python -m treetaggerwrapper --pipe
 
 To just see preprocessing (chunking) result:
 
-    echo "This is the sentence." | python -m treetaggerwrapper -e utf8 --pipe --prepronly
+    echo "This is the sentence." | python -m treetaggerwrapper --pipe --prepronly
 
 To just see tagging (TreeTagger call) result:
 
-echo -e "This\nis\nthe\nsentence\n." | python -m treetaggerwrapper -e utf8 --pipe --tagonly
+    echo -e "This\nis\nthe\nsentence\n." | python -m treetaggerwrapper --pipe --tagonly
 
 Written by Laurent Pointal <laurent.pointal@limsi.fr> for CNRS-LIMSI.
 Alternate email: <laurent.pointal@laposte.net>
