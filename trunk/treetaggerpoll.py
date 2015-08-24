@@ -138,7 +138,7 @@ class TaggerPoll(object):
         self._waitjobs = mp.Queue()
         self._finishedjobs = mp.Queue()
         self._jobsrefs = {}
-        self._jobslock = threading.Lock()
+        self._jobslock = mp.Lock()
         # Following thread retrieve results, store them in corresponding Job, and
         # signal them.
         self._jobsmonitor = threading.Thread(target=self._monitor_main)
