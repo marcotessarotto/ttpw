@@ -11,7 +11,7 @@ import treetaggerpoll as ttpoll
 #ttpw.enable_debugging_log()
 
 p = ttpoll.TaggerPoll()
-JOBSCOUNT = 10000
+JOBSCOUNT = 100
 res = []
 
 text = "This is Mr John's own house, it's very nice."
