@@ -7,16 +7,15 @@
 
 
 TreeTagger Python Wrapper's documentation!
-==========================================
+******************************************
 
 .. toctree::
    :maxdepth: 2
 
-..
-    Include documentation from the module itself.
-
-
 .. automodule:: treetaggerwrapper
+
+Module exceptions, class and functions
+======================================
 
 .. autoexception:: TreeTaggerError
 
@@ -31,8 +30,8 @@ TreeTagger Python Wrapper's documentation!
 
 .. autofunction:: make_tags
 
-Polls of taggers
-----------------
+Polls of taggers threads
+========================
 
 .. autoclass:: TaggerPoll
 
@@ -45,8 +44,9 @@ Polls of taggers
 
   .. automethod:: wait_finished
 
+
 Extra functions
----------------
+===============
 
 Some functions can be of interest, eventually for another project.
 
@@ -67,6 +67,27 @@ Some functions can be of interest, eventually for another project.
 .. autofunction:: save_configuration
 .. autofunction:: split_sgml
 
+
+.. _polls of taggers process:
+
+Polls of taggers process
+========================
+
+.. automodule:: treetaggerpoll
+
+Main process poll classes
+-------------------------
+
+  .. autoclass:: TaggerProcessPoll
+
+    .. automethod:: tag_text_async
+    .. automethod:: tag_file_async
+    .. automethod:: tag_file_to_async
+    .. automethod:: stop_poll
+
+  .. autoclass:: ProcJob
+
+    .. automethod:: wait_finished
 
 
 ..
