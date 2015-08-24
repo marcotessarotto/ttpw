@@ -37,21 +37,21 @@ base TreeTagger installation as an external command).
    Send it to laurent.pointal@limsi.fr
 
 Installation
-------------
+============
 
 Requirements
-~~~~~~~~~~~~
+------------
 
 ``treetaggerwrapper`` rely on :mod:`six` module for Python2 and Python3
 compatibility. It also uses standard :mod:`io` module for files reading with
-decoding/encoding .
+decoding / encoding .
 
 Tests have been limited to Python 2.7 and Python 3.4 under Linux and Windows.
 It don't work with earlier version of Python as some names are not defined in
 their standard libraries.
 
 Automatic
-~~~~~~~~~
+---------
 
 As the module is now registered on `PyPI`_, you can simply install it::
 
@@ -65,19 +65,25 @@ use a `virtual env`_)::
 .. _PyPI: https://pypi.python.org/pypi/treetaggerwrapper
 .. _virtual env: https://virtualenv.pypa.io/en/latest/
 
-If necessary, you may `manually install pip`_ and rely on former
-instructions.
-
-.. _manually install pip: https://pip.pypa.io/en/latest/installing.html
+If it is already installed as a package, use pip's install :option:`-U` option
+to install the last version (update).
 
 Manual
-~~~~~~
+------
 
 For a complete manual installation, install :mod:`six` module and other
-dependancies, and simply put the :file:`treetaggerwrapper.py` file in a
+dependancies, and simply put the :file:`treetaggerwrapper.py`
+and :file:`treetaggerpoll.py` files in a
 directory listed in the Python path (or in your scripts directory).
 
-The wrapper search for a treetagger directory (allowing variations in name)
+Configuration
+=============
+
+The wrapper search for the treetagger directory
+(the one with :file:`bin`, :file:`lib` and :file:`cmd` subdirectories),
+allowing variations in TreeTagger directory name
+(example: :file:`treetagger`, :file:`TreeTagger`,
+:file:`Tree-Tagger-latest`, :file:`Tree Tagger`, etc),
 in different locations from user home directory to host-wide directories.
 If the treetagger directory is found, its location is stored in a file
 :file:`$HOME/.config/treetagger_wrapper.cfg` (or any place following
@@ -87,13 +93,14 @@ still exists.
 
 If you installed TreeTagger in a non-guessable location, you still can set up 
 an environment variable :envvar:`TAGDIR` to reference the
-TreeTagger software installation directory (the one with :file:`bin`, :file:`lib`
-and :file:`cmd` subdirectories), or give a `TAGDIR` named argument
-when building a :class:`TreeTagger` object to provide this information.
+TreeTagger software installation directory, or give a `TAGDIR` named argument
+when building a :class:`TreeTagger` object to provide this information,
+or simply put that information into configuration file in section ``[CACHE]``
+under key ``tagdir = …``.
 
 
 Usage
------
+=====
 
 Primary usage is to wrap TreeTagger binary and use it as a functional tool.
 You have to build a :class:`TreeTagger` object, specifying the target
@@ -104,7 +111,8 @@ method with the string to tag, and it will return a list of lines corresponding
 to the text tagged by TreeTagger.
 
 Example (with Python3, **Unicode strings** by default — with Python2 you
-need to use explicit notation ``u"string"``)::
+need to use explicit notation ``u"string"``, of if within a script start by a
+:code:`from __future__ import unicode_literals` directive)::
 
     >>> import pprint   # For proper print of sequences.
     >>> import treetaggerwrapper
@@ -160,7 +168,7 @@ from anywhere with the :option:`-m` Python option::
 .. _important modifications notes:
 
 Important modifications notes
------------------------------
+=============================
 
 On august 2015, the module has been reworked deeply, some
 modifications imply modifications in users code.
@@ -170,13 +178,14 @@ modifications imply modifications in users code.
   with underscore separator between words.
   Typically for users, ``tt.TagText()`` becomes ``tt.tag_text()``
   (for this method a compatibility method has been written, but
-  no longer support of list of non-unicode strings).
+  no longer support lists of non-unicode strings).
 
 - Work with Python2 and Python3, with same code.
 
 - Use **Unicode strings** internally (it's no more possible to provide
   binary strings and their encoding as separated 
-  parameters - you have to decode the strings yourself before).
+  parameters - you have to decode the strings yourself before calling
+  module functions).
 
 - Assume **utf-8** when dealing with *TreeTagger binary*, default to its utf-8
   versions of parameter and abbrev files. If you use another encoding,
@@ -196,7 +205,10 @@ modifications imply modifications in users code.
 - Documentation has been revised to only export main things for module usage;
   internals stay documented via comments in the source.
 
-- Text chunking has been revisited.
+- **Text chunking** has been revisited and must be more efficient.
+  And you can now also provide your own external chunking function when
+  creating the wrapper — which will replace internal chuning in the whole
+  process.
 
 - XML tags generated have been modified (made shorted and with ``ttpw:`` namespace).
 
@@ -206,13 +218,14 @@ modifications imply modifications in users code.
   objects, put them in a poll, and work with them from different threads.
 
 - Support polls of taggers for optimal usage on multi-core computers.
-  See :class:`TaggerPoll` class.
+  See :class:`TaggerPoll` class for thread poll
+  and :class:`treetaggerpoll.TaggerProcessPoll` class for process poll.
 
 Processing
-----------
+==========
 
 This module does two main things
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 - Manage preprocessing of text (chunking) in place of external Perl scripts as in
   base TreeTagger installation, thus avoid starting Perl each time a piece
@@ -220,11 +233,11 @@ This module does two main things
 
 - Keep alive a pipe connected to TreeTagger process, and use that pipe
   to send data and retrieve tags, thus avoid starting TreeTagger each
-  time and avoid writing/reading temporary files on disk (direct
+  time and avoid writing / reading temporary files on disk (direct
   communication via the pipe).
 
 Supported languages
-...................
+^^^^^^^^^^^^^^^^^^^
 
 .. note:: Encoding specification
 
@@ -254,13 +267,14 @@ It can be used for tagging only for languages:
 - swahili (sw)
 
 Note: chunking parameters have not been adapted to these language 
-and their specific features, you may try to chunk… with no guaranty.
+and their specific features, you may try to chunk with default processing…
+with no guaranty.
 If you have an external chunker, you can call the tagger with
 option ``tagonly`` set to True, you should then provide a simple
 string with one token by line (or list of strings with one token
 by item).
 If you chunker is a callable, you can provide your own chunking function
-with :option:`CHUNKERPROC` named when constructing :class:`TreeTagger`
+with :option:`CHUNKERPROC` named parameter when constructing :class:`TreeTagger`
 object, and then use it normally (your function is called in place of
 standard chunking).
 
@@ -271,7 +285,7 @@ You can override these names using :option:`TAGPARFILE` and
 :option:`TAGABBREV` parameters, and then use alternate files.
 
 Other things done by this module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 - Can number lines into XML tags (to identify lines after TreeTagger
   processing).
@@ -295,7 +309,7 @@ and other traces to be sent to stdout).
 For an example of logging use, see :func:`enable_debugging_log` function.
 
 Alternative tool
-~~~~~~~~~~~~~~~~
+----------------
 
 You may also take a look at project `treetagger python`_ 
 which wraps TreeTagger command-line tools (simpler than
@@ -304,10 +318,6 @@ to tag in your process as it calls and restarts TreeTagger
 chunking then tagging tools chain for each text).
 
 .. _treetagger python: https://github.com/miotto/treetagger-python/blob/master/treetagger.py
-
-
-Module exceptions, class and functions
---------------------------------------
 
 """
 
@@ -1066,6 +1076,8 @@ class TreeTagger(object):
         self.repldnsexp = self.langsupport["repldnsexp"]
 
         # ----- External chunking proc
+        # TODO: Allow str in CHUNKERPROC, and import corresponding name
+        # (this would be necessary for multiprocess with chunker from an external module)
         if "CHUNKERPROC" in kargs:
             self.chunkerproc = kargs["CHUNKERPROC"]
             if not callable(self.chunkerproc):
@@ -2221,11 +2233,7 @@ class TaggerPoll(object):
         Parallel processing via threads in Python within the same
         process is limited due to the global interpreter lock
         (Python's GIL).
-        See multiprocessing for real parallel process
-        (I may sometime transform TaggerPool to a multiprocessing
-        tool — as chunking took a large part of processing and it is
-        done in Python, so under the GIL, overall performance gain
-        with threading is not excellent).
+        See :ref:`polls of taggers process` for real parallel process.
 
     **Example of use**
 
