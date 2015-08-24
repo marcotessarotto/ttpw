@@ -7,9 +7,10 @@ import urllib.request
 
 CORPUS = [
     ("https://www.gutenberg.org/files/29772/29772-0.txt", "notevoltcond.txt"),
-    ("https://www.gutenberg.org/ebooks/27828.txt.utf-8", "souvanecileelbe.txt"),
+    ("https://www.gutenberg.org/files/27828/27828-8.txt", "souvanecileelbe.txt"),
     ("https://www.gutenberg.org/files/32297/32297-0.txt", "philozoolavantdarwin.txt"),
     ]
+
 
 
 # Build data dir if necessary.
