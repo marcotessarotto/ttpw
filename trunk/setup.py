@@ -14,7 +14,7 @@ setup(
     url='http://perso.limsi.fr/pointal/dev:treetaggerwrapper',
     download_url='https://sourcesup.renater.fr/projects/ttpw/',
     description='Wrapper for the TreeTagger text annotation tool from H.Schmid.',
-    py_modules=['treetaggerwrapper'],
+    py_modules=['treetaggerwrapper', 'treetaggerpoll'],
     keywords=['tagger','treetagger','wrapper','text','annotation','linguistic'],
     license='GNU General Public License v3 or greater',
     requires=['six'],
