@@ -361,10 +361,10 @@ import threading
 import time
 
 # Set to enable debugging code (mainly logs).
-DEBUG = 0
+DEBUG = 1
 
 # Set to enable preprocessing specific debugging code.
-DEBUG_PREPROCESS = 0
+DEBUG_PREPROCESS = 1
 
 # Set to enable multithreading specific debugging code.
 DEBUG_MULTITHREAD = 0
@@ -848,6 +848,7 @@ class TreeTagger(object):
         """
         # Get data in different place, setup context for pre-processing and
         # processing.
+        logger.debug("Using treetaggerwrapper.py from %s", osp.abspath(__file__))
         self._set_language(kargs)
         self._set_tagger(kargs)
         self._set_preprocessor(kargs)
@@ -1045,18 +1046,18 @@ class TreeTagger(object):
             self.fchar_re = None
             self.fcharandperiod_re = None
 
-        # ----- Character sequences to cut-off at beginning of words.
+        # ----- Character *sequences* to cut-off at beginning of words.
         self.pclictic = self.langsupport["pclictic"]
         if self.pclictic:
-            self.pclictic_re = re.compile("^(" + self.pclictic + ")(.*)",
+            self.pclictic_re = re.compile("^(" + self.pclictic + ")(.*)$",
                                           re.IGNORECASE | re.VERBOSE)
         else:
             self.pclictic_re = None
 
-        # ----- Character sequences to cut-off at end of words.
+        # ----- Character *sequences* to cut-off at end of words.
         self.fclictic = self.langsupport["fclictic"]
         if self.fclictic:
-            self.fclictic_re = re.compile("(.*)(" + self.fclictic + ")$",
+            self.fclictic_re = re.compile("^(.*)(" + self.fclictic + ")$",
                                           re.IGNORECASE | re.VERBOSE)
         else:
             self.fclictic_re = None
@@ -1078,7 +1079,7 @@ class TreeTagger(object):
         # ----- External chunking proc
         # TODO: Allow str in CHUNKERPROC, and import corresponding name
         # (this would be necessary for multiprocess with chunker from an external module)
-        if "CHUNKERPROC" in kargs:
+        if "CHUNKERPROC" in kargs and kargs["CHUNKERPROC"] is not None:
             self.chunkerproc = kargs["CHUNKERPROC"]
             if not callable(self.chunkerproc):
                 logger.error("Chunker function in CHUNKERPROC is not callable.")
@@ -1228,14 +1229,14 @@ class TreeTagger(object):
 
         # Preprocess text (prepare for TreeTagger).
         if not tagonly:
-            logger.debug("Pre-processing text.")
             if self.chunkerproc is None:
+                logger.debug("Pre-processing text with internal chunker.")
                 lines = self._prepare_text(text, tagblanks=tagblanks, numlines=numlines,
                                        notagurl=notagurl, notagemail=notagemail,
                                        notagip=notagip, notagdns=notagdns,
                                        nosgmlsplit=nosgmlsplit)
             else:
-                # Let external chunker proc do the job.
+                logger.debug("Pre-processing text with user providen chunker.")
                 lines = self.chunkerproc(self, text)
         else:
             # Adapted to support list of lines.
@@ -1430,7 +1431,7 @@ class TreeTagger(object):
                 else:
                     newparts.extend(split_sgml(part))
             parts = newparts
-            logger.debug("Splitted between SGML tags and others.")
+            logger.debug("Splitted between SGML tags and others %r.")
 
         newparts = []
         if tagblanks:
@@ -1481,17 +1482,17 @@ class TreeTagger(object):
         newparts = []
         for part in parts:
             if isinstance(part, FinalPart):
-                # TreeTagger process by line... a tag cannot be on multiple
+                # TreeTagger process by line... a token cannot be on multiple
                 # lines (in case it occured in source text).
                 part.text = part.text.replace("\n", " ")
-                if DEBUG_PREPROCESS: logger.debug("Seen TAG: %r", part)
+                logger.debug("No _prepare_part() for final part %s.", part)
                 newparts.append(part)
             else:
                 # This is another part which need more analysis.
                 newparts.extend(self._prepare_part(part))
         parts = newparts
 
-        logger.debug("Text preprocessed, parts splitted by line.")
+        logger.debug("Text preprocessed, parts splitted one by line.")
 
         # Return only str items for caller.
         return [x.text if isinstance(x, FinalPart) else x for x in parts]
