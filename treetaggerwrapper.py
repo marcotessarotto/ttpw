@@ -361,10 +361,10 @@ import threading
 import time
 
 # Set to enable debugging code (mainly logs).
-DEBUG = 1
+DEBUG = 0
 
 # Set to enable preprocessing specific debugging code.
-DEBUG_PREPROCESS = 1
+DEBUG_PREPROCESS = 0
 
 # Set to enable multithreading specific debugging code.
 DEBUG_MULTITHREAD = 0
@@ -853,6 +853,10 @@ class TreeTagger(object):
         self._set_tagger(kargs)
         self._set_preprocessor(kargs)
         # Note: TreeTagger process is started later, when really needed.
+        if kargs:
+            badargs = ", ".join(sorted(kargs.keys()))
+            logger.error("Uknown TreeTagger() parameters: %s", badargs)
+            raise TreeTaggerError("Uknown TreeTagger() parameters: %s" % (badargs,))
 
     # -------------------------------------------------------------------------
     def _set_language(self, kargs):
@@ -861,12 +865,7 @@ class TreeTagger(object):
         Internal use.
         """
         # ----- Find language to tag.
-        if "TAGLANG" in kargs:
-            self.lang = kargs["TAGLANG"]
-        elif "TAGLANG" in os.environ:
-            self.lang = os.environ["TAGLANG"]
-        else:
-            self.lang = "en"
+        self.lang = get_param("TAGLANG", kargs, "en")
         if self.lang not in g_langsupport:
             allowed = ', '.join(sorted(g_langsupport.keys()))
             logger.error("Language %s not supported - allowed: %s",
@@ -921,12 +920,7 @@ class TreeTagger(object):
         logger.info("tagbin=%s", self.tagbin)
 
         # ----- Find parameter file.
-        if "TAGPARFILE" in kargs:
-            self.tagparfile = kargs["TAGPARFILE"]
-        elif "TAGPARFILE" in os.environ:
-            self.tagparfile = os.environ["TAGPARFILE"]
-        else:
-            self.tagparfile = None
+        self.tagparfile = get_param("TAGPARFILE", kargs, None)
         # Not in previous else to manage None parameter in kargs.
         if self.tagparfile is None:
             self.tagparfile = self.langsupport["tagparfile"]
@@ -985,12 +979,7 @@ class TreeTagger(object):
         Internal use.
         """
         # ----- Find abbreviations file.
-        if "TAGABBREV" in kargs:
-            self.abbrevfile = kargs["TAGABBREV"]
-        elif "TAGABBREV" in os.environ:
-            self.abbrevfile = os.environ["TAGABBREV"]
-        else:
-            self.abbrevfile = None
+        self.abbrevfile = get_param("TAGABBREV", kargs, None)
         # Not in previous else to manage None parameter in kargs.
         if self.abbrevfile is None:
             self.abbrevfile = self.langsupport["abbrevfile"]
@@ -1077,15 +1066,14 @@ class TreeTagger(object):
         self.repldnsexp = self.langsupport["repldnsexp"]
 
         # ----- External chunking proc
-        # TODO: Allow str in CHUNKERPROC, and import corresponding name
         # (this would be necessary for multiprocess with chunker from an external module)
-        if "CHUNKERPROC" in kargs and kargs["CHUNKERPROC"] is not None:
-            self.chunkerproc = kargs["CHUNKERPROC"]
-            if not callable(self.chunkerproc):
-                logger.error("Chunker function in CHUNKERPROC is not callable.")
-                raise TreeTaggerError("Chunker function in CHUNKERPROC is not callable.")
-        else:
-            self.chunkerproc = None
+        self.chunkerproc = get_param("CHUNKERPROC", kargs, None)
+        if isinstance(self.chunkerproc, six.text_type):
+            # TODO: Allow str in CHUNKERPROC, and import corresponding name
+            raise NotImplementedError("CHUNKERPROC as name")
+        if self.chunkerproc is not None and not callable(self.chunkerproc):
+            logger.error("Chunker function in CHUNKERPROC is not callable.")
+            raise TreeTaggerError("Chunker function in CHUNKERPROC is not callable.")
 
     # --------------------------------------------------------------------------
     def _start_process(self):
@@ -1410,7 +1398,6 @@ class TreeTagger(object):
             logger.debug("Numbering lines.")
             parts = []
             for num, line in enumerate(lines):
-                print(num, line)
                 parts.append(FinalPart(NUMBEROFLINE.format(num + 1,)))
                 parts.append(line)
             # Remove temporary storage.
@@ -1555,27 +1542,27 @@ class TreeTagger(object):
             while True:
                 finished = True  # Exit at end if no match.
                 # cut off preceding punctuation
-                if self.pchar_re != None:
+                if self.pchar_re is not None:
                     matchobj = self.pchar_re.match(part)
-                    if matchobj != None:
+                    if matchobj is not None:
                         if DEBUG_PREPROCESS:
                             logger.debug("Splitting preceding punct: %r", matchobj.group(1))
                         prefix.append(matchobj.group(1))  # First pchar.
                         part = matchobj.group(2)  # Rest of text.
                         finished = False
                 # cut off trailing punctuation
-                if self.fchar_re != None:
+                if self.fchar_re is not None:
                     matchobj = self.fchar_re.match(part)
-                    if matchobj != None:
+                    if matchobj is not None:
                         if DEBUG_PREPROCESS:
                             logger.debug("Splitting following punct: %r", matchobj.group(2))
                         suffix.insert(0, matchobj.group(2))
                         part = matchobj.group(1)
                         finished = False
                 # cut off trailing periods if punctuation precedes
-                if self.fcharandperiod_re != None:
+                if self.fcharandperiod_re is not None:
                     matchobj = self.fcharandperiod_re.match(part)
-                    if matchobj != None:
+                    if matchobj is not None:
                         if DEBUG_PREPROCESS:
                             logger.debug("Splitting dot after following punct: .")
                         suffix.insert(0, ".")  # Last dot.
@@ -1598,7 +1585,7 @@ class TreeTagger(object):
 
             # identify numbers.
             matchobj = self.number_re.match(part)
-            if matchobj != None:
+            if matchobj is not None:
                 # If there is only a dot after the number which is not
                 # recognized, then split it and take the number.
                 if matchobj.group() == part[:-1] and part[-1] == ".":
@@ -1639,11 +1626,11 @@ class TreeTagger(object):
             #    continue
 
             # cut off clictics
-            if self.pclictic_re != None:
+            if self.pclictic_re is not None:
                 retry = True
                 while retry:
                     matchobj = self.pclictic_re.match(part)
-                    if matchobj != None:
+                    if matchobj is not None:
                         if DEBUG_PREPROCESS:
                             logger.debug("Splitting begin clictic: %r %r",
                                          matchobj.group(1), matchobj.group(2))
@@ -1654,11 +1641,11 @@ class TreeTagger(object):
                     else:
                         retry = False
 
-            if self.fclictic_re != None:
+            if self.fclictic_re is not None:
                 retry = True
                 while retry:
                     matchobj = self.fclictic_re.match(part)
-                    if matchobj != None:
+                    if matchobj is not None:
                         if DEBUG_PREPROCESS:
                             logger.debug("Splitting end clictic: %r %r",
                                          matchobj.group(1), matchobj.group(2))
@@ -2178,6 +2165,8 @@ def get_param(paramname, paramsdict, defaultvalue):
     if paramname in paramsdict:
         param = paramsdict[paramname]
         logger.debug("Found param %s in paramsdict.", paramname)
+        # Consume parameter from dict.
+        del paramsdict[paramname]
     elif paramname in os.environ:
         param = os.environ[paramname]
         logger.debug("Found param %s in env vars.", paramname)

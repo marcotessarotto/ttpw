@@ -8,14 +8,14 @@ python process_once.py
 
 # Timed process
 echo "Using Python 2 with standard chunking:"
-time python process_once.py
+time python process_once.py $1
 
 echo "Using Python 3 with standard chunking:"
-time python3 process_once.py
+time python3 process_once.py $1
 
 # Timed process
 echo "Using Python 2 with external chunking:"
-time python process_once.py external
+time python process_once.py external $1
 
 echo "Using Python 3 with external chunking:"
-time python3 process_once.py external
+time python3 process_once.py external $1

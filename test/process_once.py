@@ -35,9 +35,9 @@ if PROFILING:
     import cProfile
 
 import treetaggerwrapper as ttpw
-ttpw.enable_debugging_log()
+#ttpw.enable_debugging_log()
 
-tt = ttpw.TreeTagger(LANG='fr', CHUNKERPROC=chunkfct)
+tt = ttpw.TreeTagger(TAGLANG='fr', CHUNKERPROC=chunkfct)
 
 if TEST_BIGFILES:
     import io
@@ -58,6 +58,6 @@ if TEST_BIGFILES:
             #    f.writelines(res)
 else:
     sentence = "Les sanglots longs des violons de l'automne bercent mon coeur d'une langueur monotone."
-    for i in range(1):
+    for i in range(1000):
         res = tt.tag_text(sentence)
-        print(res)
+        #print(res)
