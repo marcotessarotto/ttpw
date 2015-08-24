@@ -17,6 +17,48 @@ DEBUG_MULTITHREAD = True
 __all__ = []
 
 
+def worker_main(requestsqueue, resultsqueue, taggerargs):
+    """Main function of a worker process.
+
+    The worker process first create a :class:`treetaggerwrapper.TreeTagger`
+    object corresponding to options in :parapm:`taggerargs`.
+    Then it loop on picking up a job work from the poll shared works queue,
+    process it, and put back its result in the poll shared results queue.
+    The loop exit when the picked work is None.
+
+    :param requestsqueue: incoming requests queue of works to do.
+    :type requestsqueue: Queue
+    :param resultsqueue: outgoing result queue of works done.
+    :type resultsqueue: Queue
+    :param taggerargs: named parameters dict for creating the
+        tagger.
+    :type taggerargs: dict
+    """
+    tagger = ttpw.TreeTagger(**taggerargs)
+    while True:
+        if DEBUG_MULTITHREAD:
+            logger.debug("Worker waiting for work to pick…")
+        work = requestsqueue.get()  # Pickup a job work.
+        if work is None:
+            if DEBUG_MULTITHREAD:
+                logger.debug("Worker finishing")
+            break   # Put Nones in works queue to stop workers.
+        # Do the work
+        workid, workmeth, workargs = work
+        if DEBUG_MULTITHREAD:
+            logger.debug("Worker doing picked work %d", workid)
+        try:
+            meth = getattr(tagger, workmeth)
+            result = meth(**workargs)
+        except Exception as e:
+            if DEBUG_MULTITHREAD:
+                logger.debug("Work %d exit with exception", workid)
+            result = e
+        # Send back result.
+        resultsqueue.put((workid, result))
+    del tagger  # Explicitely remove object.
+
+
 # ==============================================================================
 class TaggerPoll(object):
     """Keep a poll of TreeTaggers process for processing with different threads.
@@ -24,15 +66,15 @@ class TaggerPoll(object):
     This class is here for people preferring natural language processing
     over multiprocessing programming… :-)
 
-    Each poll manage a set of threads, able to do parallel chunking, and a
-    set of taggers, able to do (more real) parallel tagging.
-    All taggers in the same poll are created for same processing (with
-    same options).
+    Each poll manage a set of processes, able to do parallel chunking and tagging.
+    All taggers in the same poll are created for same processing (with same options).
 
     :class:`TaggerPoll` objects has same high level interface than :class:`TreeTagger`
     ones with ``_async`` at end of methods names.
-    Each of …_asynch method returns a :class:`Job` object allowing to know if
-    processing is finished, to wait for it, and to get the result.
+
+    Each of ``…_asynch`` method returns a :class:`treetaggerwrapper.Job` object
+    allowing to know if processing is finished, to wait for it, and to get the
+    result.
 
     If you want to **properly terminate** a :class:`TaggerPoll`, you must
     call its :func:`TaggerPoll.stop_poll` method.
@@ -112,7 +154,7 @@ class TaggerPoll(object):
         if DEBUG_MULTITHREAD:
             logger.debug("Creating workers for TaggerPoll")
         for i in range(workerscount):
-            p = mp.Process(target=self._worker_main,
+            p = mp.Process(target=worker_main,
                             args=(self._waitjobs, self._finishedjobs, taggerargs))
             #th.daemon = True
             self._workers.append(p)
@@ -129,41 +171,6 @@ class TaggerPoll(object):
         # We put just pickleable data inside a tuple.
         self._waitjobs.put((id(job), methname, kwargs))
         return job
-
-    def _worker_main(self, requestsqueue, resultsqueue, taggerargs):
-        """Main function of a worker thread.
-
-        :param requestsqueue: incoming requests queue of works to do.
-        :type requestsqueue: Queue
-        :param resultsqueue: outgoing result queue of works done.
-        :type resultsqueue: Queue
-        :param taggerargs: named parameters dict for creating the
-            tagger.
-        !type taggerargs: dict
-        """
-        tagger = ttpw.TreeTagger(**taggerargs)
-        while True:
-            if DEBUG_MULTITHREAD:
-                logger.debug("Worker waiting for work to pick…")
-            work = requestsqueue.get()  # Pickup a job.
-            if work is None:
-                if DEBUG_MULTITHREAD:
-                    logger.debug("Worker finishing")
-                break   # Put Nones in jobs queue to stop workers.
-            # Do the work
-            workid, workmeth, workargs = work
-            if DEBUG_MULTITHREAD:
-                logger.debug("Worker doing picked work %d", workid)
-            try:
-                meth = getattr(tagger, workmeth)
-                result = meth(**workargs)
-            except Exception as e:
-                if DEBUG_MULTITHREAD:
-                    logger.debug("Work %d exit with exception", workid)
-                result = e
-            # Send back result.
-            resultsqueue.put((workid, result))
-        del tagger  # Explicitely remove
 
     def _monitor_main(self):
         while True:
