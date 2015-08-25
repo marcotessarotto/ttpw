@@ -15,37 +15,36 @@ in place of threads, each process being independant with its own interpreter
 The :mod:`treetaggerpoll` module and its class :class:`TaggerProcessPoll` are for
 people preferring natural language processing over multiprocessing programming… :-)
 
-A comparison using the following example, running on a Linux OS with 4 core CPU,
-tested with 1  2 3 4 and 10 worker process, gives the result in table below.
-This shows great usage of available CPU when using this module for chunking/tagging large data sets:
+A comparison using the following example, running on a Linux OS with 4 core
+Intel Xeon X5450 CPU,
+tested with 1  2 3 4 5 and 10 worker process, gives the result in table below —
+printed time is for the main process (which wait for its subprocess termination).
+This shows great usage of available CPU when using this module for chunking/tagging:
 
 ..  list-table:: Workers count comparison
     :header-rows: 1
 
     * - workers
-      - real
-      - user
-      - sys
+      - printed time
+      - real CPU time
     * - 1
-      - 2m58.531s
-      - 2m21.569s
-      - 0m59.334s
+      - 228.49 sec
+      - 3m48.527s
     * - 2
-      - 1m18.022s
-      - 1m49.294s
-      - 0m34.456s
+      - 87.88 sec
+      - 1m27.918s
     * - 3
-      - 0m57.086s
-      - 1m45.792s
-      - 0m32.240s
+      - 61.12 sec
+      - 1m1.154s
     * - 4
-      - 0m53.688s
-      - 1m44.828s
-      - 0m33.211s
+      - 53.86 sec
+      - 0m53.907s
+    * - 5
+      - 50.68 sec
+      - 0m50.726s
     * - 10
-      - 0m56.827s
-      - 1m53.857s
-      - 0m41.368s
+      - 56.45 sec
+      - 0m56.487s
 
 
 Short example
@@ -54,13 +53,45 @@ Short example
 This example is available in the source code repository, in :file:`test/` subdirectory.
 Here you can see that main module must have its main code wrapped in
 a :code:`if __name__ == '__main__':` condition (for correct Windows support).
-It may take an optional parameter to select how many workers yo wants (by default as
-many workers as you have CPUs).
+It may take an optional parameter to select how many workers you want (by default as
+many workers as you have CPUs)::
 
-.. literalinclude:: ../test/procpool.py
-    :language: python
-    :linenos:
-    :lines: 9-
+    import sys
+    import time
+
+    JOBSCOUNT = 10000
+
+    def start_test(n=None):
+        start = time.time()
+        import treetaggerpoll
+
+        # Note: print() have been commented, you may uncomment them to see progress.
+        p = treetaggerpoll.TaggerProcessPoll(workerscount=n, TAGLANG="en")
+        res = []
+
+        text = "This is Mr John's own house, it's very nice. " * 40
+
+        print("Creating jobs")
+        for i in range(JOBSCOUNT):
+            # print("\tJob", i)
+            res.append(p.tag_text_async(text))
+
+        print("Waiting for jobs to complete")
+        for i, r in enumerate(res):
+            # print("\tJob", i)
+            r.wait_finished()
+            # print(str(r.result)[:50])
+            res[i] = None   # Loose Job reference - free it.
+
+        p.stop_poll()
+        print("Finished after {:0.2f} seconds elapsed".format(time.time() - start))
+
+    if __name__ == '__main__':
+        if len(sys.argv) >= 2:
+            nproc = int(sys.argv[1])
+        else:
+            nproc = None
+        start_test(nproc)
 
 If you have a graphical CPU usage, you should see a high average load on each CPU.
 
@@ -147,6 +178,12 @@ class TaggerProcessPoll(object):
         if wantresult and not keepjobs:
             logger.debug("TaggerProcessPoll can't wantresult without keepjobs." )
             raise treetaggerwrapper.TreeTaggerError("Can't have wantresult without keepjobs.")
+
+        # We create a temporary tagger and tag a small text to be able to detect any
+        # problem and raise exception from here (and not in created subprocess).
+        tmptagger = treetaggerwrapper.TreeTagger(**kwargs)
+        tmptagger.tag_text(tmptagger.dummysequence)
+        del tmptagger
 
         self._keepjobs = keepjobs
         self._wantresult = wantresult
