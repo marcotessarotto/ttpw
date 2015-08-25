@@ -15,10 +15,10 @@ see `Helmut Schmid TreeTagger site`_.
 
 .. _Helmut Schmid TreeTagger site: http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html
 
-For this module, see `Project page`_ and `Source repository`_
+For this module, see `Developer Project page`_ and `Project Source repository`_
 
-.. _Project page: https://perso.limsi.fr/pointal/dev:treetaggerwrapper
-.. _Source repository: https://sourcesup.renater.fr/scm/?group_id=647
+.. _Developer  Project page: https://perso.limsi.fr/pointal/dev:treetaggerwrapper
+.. _Project Source repository: https://sourcesup.renater.fr/projects/ttpw/
 
 You can also retrieve the latest version of this module with the svn command::
 
