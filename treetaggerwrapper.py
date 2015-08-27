@@ -377,6 +377,11 @@ import sys
 import threading
 import time
 
+if six.PY2:
+    # Under Python2 a permission denied error raises an OSError
+    # with errno 13.
+    PermissionError = OSError
+
 # Set to enable debugging code (mainly logs).
 DEBUG = 0
 
@@ -2064,6 +2069,29 @@ def locate_treetagger():
             searchdirs.append(os.environ['ProgramFiles(x86)'])
         if 'ProgramW6432' in os.environ:
             searchdirs.append(os.environ['ProgramW6432'])
+        # Also search at root of drives and at one level subdirs
+        # depth.
+        try:
+            import ctypes
+            # May test GetDriveTypeW…
+            GetDriveTypeW = ctypes.windll.kernel32.GetDriveTypeW
+            GetDriveTypeW.argtypes = [ ctypes.c_wchar_p ]  # LPCTSTR
+            for driveletter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                try:
+                    drivepath = "{}:\\".format(driveletter)
+                    drivetype = GetDriveTypeW(drivepath)
+                    if drivetype != 3:  # 3 = DRIVE_FIXED
+                        continue
+                    if drivepath not in searchdirs:
+                        searchdirs.append(drivepath)
+                    diskdirs = [osp.join(drivepath, x) for x in os.listdir(drivepath)]
+                    diskdirs = [x for x in homedirs if osp.isdir(x) and x not in searchdirs]
+                    searchdirs.extend(diskdirs)
+                except PermissionError:
+                    pass
+        except:
+            pass
+
     # Any posix OS (including Linux, *BSD… (so MacOSX), cygwin on Windows).
     if ON_POSIX:
         searchdirs.extend([
@@ -2105,8 +2133,7 @@ def locate_treetagger():
                             osp.isdir(osp.join(directory, candidate, "lib")):
                         founddir = osp.join(directory, candidate)
                         break
-        except OSError:  # PermissionError is Python3 only
-            # Some directories may not be listables.
+        except PermissionError:     # Some directories may not be listable.
             pass
         if founddir is not None:
             break
