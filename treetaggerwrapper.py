@@ -1165,7 +1165,7 @@ class TreeTagger(object):
         to retrieve a list of :class:`Tag` named tuples with meaning fields.
 
         :param  text: the text to tag.
-        :type   text: string   /   [ string ]
+        :type   text: unicode string   /   [ unicode string ]
         :param  numlines: indicator to keep line numbering information in
                           data flow (done via SGML tags) (default to False).
         :type   numlines: boolean
@@ -1212,8 +1212,20 @@ class TreeTagger(object):
             raise TreeTaggerError("Line numbering/blanks tagging need use " + \
                                   "of -sgml option for TreeTagger.")
 
+        if isinstance(text, six.binary_type):
+            # Raise exception now, with an explicit message.
+            logger.error("Must use *unicode* string as text to tag, not %s.", type(text))
+            raise TreeTaggerError("Must use *unicode* string as text to tag.")
+
         if isinstance(text, six.text_type):
             text = [text]
+        else:
+            for t in text:
+                if isinstance(t, six.binary_type):
+                    # Raise exception now, with an explicit message.
+                    logger.error("Must use list of *unicode* string as text to tag, not %s.", type(t))
+                    raise TreeTaggerError("Must use list of *unicode* string as text to tag.")
+
 
         # Preprocess text (prepare for TreeTagger).
         if not tagonly:
