@@ -319,6 +319,23 @@ chunking then tagging tools chain for each text).
 
 .. _treetagger python: https://github.com/miotto/treetagger-python/blob/master/treetagger.py
 
+
+Hints
+=====
+
+On windows, if you get the following error about some file manipulation (ex. in an
+:func:`osp.abspath` call)::
+
+    TypeError: must be (buffer overflow), not str
+
+Check that directories and filenames total length don't exceed 260 chars.
+If this is the case, you may try to use UNC names starting by ``\\?\`` (read Microsoft
+`Naming Files, Paths, and Namespaces`_ documentation — note: you cannot use ``/``
+to separate directories with this notation).
+
+
+.. _Naming Files, Paths, and Namespaces: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247.aspx
+
 """
 
 from __future__ import print_function
