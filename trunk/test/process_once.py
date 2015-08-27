@@ -3,6 +3,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import pprint
 import sys
 
 sys.path.insert(0, '..')
@@ -30,7 +31,6 @@ if EXTERNAL:
 else:
     chunkfct = None
 
-
 if PROFILING:
     import cProfile
 
@@ -57,7 +57,28 @@ if TEST_BIGFILES:
             #               "w", encoding='utf-8') as f:
             #    f.writelines(res)
 else:
-    sentence = "Les sanglots longs des violons de l'automne bercent mon coeur d'une langueur monotone."
-    for i in range(1000):
+    sentence = """
+                Les sanglots longs
+                Des violons
+                De l'automne
+                Blessent mon cœur
+                D'une langueur
+                Monotone.
+
+                Tout suffocant
+                Et blême, quand
+                Sonne l'heure,
+                Je me souviens
+                Des jours anciens
+                Et je pleure
+
+                Et je m'en vais
+                Au vent mauvais
+                Qui m'emporte
+                Deçà, delà,
+                Pareil à la
+                Feuille morte.
+                """
+    for i in range(10000):
         res = tt.tag_text(sentence)
-        #print(res)
+        #pprint.pprint(res)
