@@ -8,7 +8,7 @@ About treetaggerwrapper
 :organization: CNRS - LIMSI
 :copyright: CNRS - 2004-2015
 :license: GNU-GPL Version 3 or greater
-:version: 2.2.1
+:version: 2.2.2
 
 For language independent part-of-speech tagger TreeTagger, 
 see `Helmut Schmid TreeTagger site`_.
@@ -323,6 +323,9 @@ chunking then tagging tools chain for each text).
 Hints
 =====
 
+Window buffer overflow
+----------------------
+
 On windows, if you get the following error about some file manipulation (ex. in an
 :func:`osp.abspath` call)::
 
@@ -336,6 +339,65 @@ to separate directories with this notation).
 
 .. _Naming Files, Paths, and Namespaces: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247.aspx
 
+
+
+TreeTagger localization
+-----------------------
+
+For your TreeTagger to be automatically find by the script, its **directory**
+must follow installation rules below:
+
+Directory naming and content
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Location search function tries to find a directory beginning with ``tree``,
+possibly followed by any char (ex. a space, a dash…), followed
+by ``tagger``, possibly followed by any sequence of chars (ex. a
+version number), and without case distinction.
+
+This match directory names like ``treetagger``, ``TreeTagger``, ``Tree-tagger``,
+``Tree Tagger``, ``treetagger-2.0``…
+
+The directory must contain :file:`bin` and :file:`lib` subdirectories
+(they are normally created by TreeTagger installation script, or directly
+included in TreeTagger Windows zipped archive).
+
+First directory corresponding to these criteria is considered to
+be the TreeTagger installation directory.
+
+Searched locations
+^^^^^^^^^^^^^^^^^^
+
+TreeTagger directory location is searched from local (user private installation)
+to global (system wide installation).
+
+1. Near the :file:`treetaggerwrapper.py` file (TreeTagger being in same directory).
+2. Containing the :file:`treetaggerwraper.py` file (module inside TreeTagger directory).
+3. User home directory (ex. :file:`/home/login`, :file:`C:\\Users\\login`).
+4. First level directories in user home directory (ex. :file:`/home/login/tools`,
+   :file:`C:\\Users\\login\\Desktop`).
+5. For MacOSX, in :file:`~/Library/Frameworks`.
+6. For Windows, in program files directories (ex. :file:`C:\\Program Files`).
+7. For Windows, in each existing fixed disk root and its first level directories
+   (ex. :file:`C:\\`, :file:`C:\\Tools`, :file:`E:\\`, :file:`E:\\Apps`).
+8. For Posix (Linux, BSD… MacOSX), in a list of standard directories:
+
+   - :file:`/usr/bin`,
+   - :file:`/usr/lib`,
+   - :file:`/usr/local/bin`,
+   - :file:`/usr/local/lib`,
+   - :file:`/opt`,
+   - :file:`/opt/bin`,
+   - :file:`/opt/lib`,
+   - :file:`/opt/local/bin`,
+   - :file:`/opt/local/lib`.
+
+9. For MacOSX, in applications standard directories:
+
+   - :file:`/Applications`,
+   - :file:`/Applications/bin`,
+   - :file:`/Library/Frameworks`.
+
 """
 
 from __future__ import print_function
@@ -346,7 +408,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.2.1'
+__version__ = '2.2.2'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
@@ -2115,9 +2177,9 @@ def locate_treetagger():
             '/opt/local/bin',
             '/opt/local/lib'])
     # And finally MacOSX.
-    if platform.system() == "Darwin":
+    if ON_MACOSX:
         searchdirs.extend([
-            '/Applications/',
+            '/Applications',
             '/Applications/bin',
             '/Library/Frameworks',
         ])
