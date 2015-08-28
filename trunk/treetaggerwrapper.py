@@ -434,6 +434,8 @@ REPLACED_EMAIL_TAG = '<repemail text="{}" />'
 REPLACED_IP_TAG = '<repip text="{}" />'
 REPLACED_DNS_TAG = '<repdns text="{}" />'
 
+# Timeout in case of problem with the tagger process (used when reading).
+TAGGER_TIMEOUT = 30
 
 # ==============================================================================
 # ALONEMARKS:
@@ -1290,14 +1292,22 @@ class TreeTagger(object):
 
             result = []
             intext = False
+            lastline_time = time.time()
             while True:
                 line = self.tagoutput.readline()
                 if DEBUG: logger.debug("Read from TreeTagger: %r", line)
                 if not line:
-                    # We process too much quickly, leave time for tagger and writer
-                    # thread to work.
-                    time.sleep(0.1)
-                    continue    # read again.
+                    if (time.time() - lastline_time) > TAGGER_TIMEOUT:
+                        # We already wait some times, there may be a problem with tagging
+                        # process communication. This avoid infinite loop.
+                        logger.error("Time out for TreeTagger reply.")
+                        raise TreeTaggerError("Time out for TreeTagger reply, enable debug / see error logs")
+                    else:
+                        # We process too much quickly, leave time for tagger and writer
+                        # thread to work.
+                        time.sleep(0.1)
+                        continue    # read again.
+                lastline_time = time.time()
 
                 line = line.decode(self.tagoutencoding, self.tagoutencerr)
                 line = line.strip()
@@ -2085,7 +2095,7 @@ def locate_treetagger():
                     if drivepath not in searchdirs:
                         searchdirs.append(drivepath)
                     diskdirs = [osp.join(drivepath, x) for x in os.listdir(drivepath)]
-                    diskdirs = [x for x in homedirs if osp.isdir(x) and x not in searchdirs]
+                    diskdirs = [x for x in diskdirs if osp.isdir(x) and x not in searchdirs]
                     searchdirs.extend(diskdirs)
                 except PermissionError:
                     pass
