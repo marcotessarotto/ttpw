@@ -341,8 +341,8 @@ to separate directories with this notation).
 
 
 
-TreeTagger localization
------------------------
+TreeTagger automatic locate
+---------------------------
 
 For your TreeTagger to be automatically find by the script, its **directory**
 must follow installation rules below:
