@@ -9,7 +9,14 @@ Python wrapper for TreeTagger
 :organization: CNRS - LIMSI
 :copyright: CNRS - 2004-2015
 :license: GNU-GPL Version 3 or greater
-:version: 2.2.1
+:version: 2.2.2
+
+`Module documentation <http://treetaggerwrapper.readthedocs.org/>`_
+
+`Subversion repository & bug tracking <https://sourcesup.renater.fr/scm/viewvc.php?root=ttpw>`_
+ (on french academic SourceSup site).
+
+`Developer page <https://perso.limsi.fr/pointal/dev:treetaggerwrapper>`_
 
 What is it
 ----------
@@ -35,20 +42,6 @@ files via options.
 
 This version has been reworked to run with Python2 and Python3 (thanks so six)
 and globally reworked, bugs fixed.
-
-**Documentation** is available on `Read the Docs`_
-(and module provides docstrings).
-
-.. _Read the Docs: http://treetaggerwrapper.readthedocs.org/
-
-**Subversion repository & bug tracking** is on french academic `Sourcesup`_ site.
-
-.. _Sourcesup: https://sourcesup.renater.fr/scm/viewvc.php?root=ttpw
-
-**Developer page** about treetagger wrapper `project page`_.
-
-.. _project page: https://perso.limsi.fr/pointal/dev:treetaggerwrapper
-
 
 Installation
 ------------
