@@ -51,7 +51,7 @@ Extra functions
 Some functions can be of interest, eventually for another project.
 
 ..
-    Separated from main content as this is les important and dont have
+    Separated from main content as this is les important and don't have
     to interfer with first reading and module usage comprehension.
 
 .. autofunction:: blank_to_space

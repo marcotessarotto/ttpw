@@ -73,7 +73,7 @@ See `TreeTagger page`_.
 There is an installation procedure based on a script, where you download needed files
 into the directory where you want to install TreeTagger, including the installation
 script, and then launch the script to unzip and install right files in right
-directories.
+directories with right names.
 
 For *Windows* users, there is a downloadable Windows binary, but no install script.
 You have to download TreeTagger parameter files (since TreeTagger goes utf-8 they
