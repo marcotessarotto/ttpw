@@ -11,17 +11,19 @@ Python wrapper for TreeTagger
 :license: GNU-GPL Version 3 or greater
 :version: 2.2.2
 
+
 `Module documentation <http://treetaggerwrapper.readthedocs.org/>`_
 
 `Subversion repository & bug tracking <https://sourcesup.renater.fr/scm/viewvc.php?root=ttpw>`_
- (on french academic SourceSup site).
+(on french academic SourceSup site).
 
 `Developer page <https://perso.limsi.fr/pointal/dev:treetaggerwrapper>`_
 
-What is it
-----------
+What is it?
+-----------
 
-This module wrap the Helmut Schmid tool into a Python class allowing to tag
+This module wrap the Helmut Schmid language independent part-of-speech
+statistical tagger into a Python class allowing to tag
 several texts one after the other, maintaining connexions with the tagger
 process to speed-up processing (remove external Perl scripts dependency
 for chunking).
