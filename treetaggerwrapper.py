@@ -24,13 +24,14 @@ You can also retrieve the latest version of this module with the svn command::
 
       svn export https://subversion.renater.fr/ttpw/trunk/treetaggerwrapper.py
 
-This wrapper tool is intended to be used in larger projects, where multiple
-chunk of texts must be processed via TreeTagger (else you may simply use the
-base TreeTagger installation as an external command).
+This wrapper tool is intended to be used in projects where multiple
+chunk of texts must be processed via TreeTagger in an automatic
+way (else you may simply use the base TreeTagger installation once as
+an external command).
 
 .. warning:: Incompatible module evolutions with version 2.0 on august 20 2015
 
-   See :ref:`important modifications notes` below !
+   See `Important modifications notes`_ below !
 
    If you use this wrapper, a small email would be wellcome to support
    module maintenance (where, purpose, funding…).
@@ -81,10 +82,9 @@ Configuration
 
 The wrapper search for the treetagger directory
 (the one with :file:`bin`, :file:`lib` and :file:`cmd` subdirectories),
-allowing variations in TreeTagger directory name
-(example: :file:`treetagger`, :file:`TreeTagger`,
-:file:`Tree-Tagger-latest`, :file:`Tree Tagger`, etc),
-in different locations from user home directory to host-wide directories.
+in several places, allowing variations in TreeTagger directory name
+— see _`TreeTagger automatic locate` for details.
+
 If the treetagger directory is found, its location is stored in a file
 :file:`$HOME/.config/treetagger_wrapper.cfg` (or any place following
 :envvar:`XDG_CONFIG_DIR` if it is specified),
@@ -165,8 +165,6 @@ from anywhere with the :option:`-m` Python option::
     python -m treetaggerwrapper --help
 
 
-.. _important modifications notes:
-
 Important modifications notes
 =============================
 
@@ -218,7 +216,7 @@ modifications imply modifications in users code.
   objects, put them in a poll, and work with them from different threads.
 
 - Support polls of taggers for optimal usage on multi-core computers.
-  See :class:`TaggerPoll` class for thread poll
+  See :class:`treetaggerwrapper.TaggerPoll` class for thread poll
   and :class:`treetaggerpoll.TaggerProcessPoll` class for process poll.
 
 Processing
@@ -327,7 +325,7 @@ Window buffer overflow
 ----------------------
 
 On windows, if you get the following error about some file manipulation (ex. in an
-:func:`osp.abspath` call)::
+:func:`abspath` call)::
 
     TypeError: must be (buffer overflow), not str
 
@@ -338,7 +336,6 @@ to separate directories with this notation).
 
 
 .. _Naming Files, Paths, and Namespaces: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247.aspx
-
 
 
 TreeTagger automatic locate
