@@ -59,6 +59,8 @@ installation:
 
     pip install --user treetaggerwrapper
 
+May use ``pip3`` to go with your Python3 installation.
+
 You also need to install TreeTagger…
 
 
