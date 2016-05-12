@@ -63,6 +63,8 @@ use a `virtual env`_)::
 
    pip install --user treetaggerwrapper
 
+May use ``pip3`` to go with your Python3 installation.
+
 .. _PyPI: https://pypi.python.org/pypi/treetaggerwrapper
 .. _virtual env: https://virtualenv.pypa.io/en/latest/
 
