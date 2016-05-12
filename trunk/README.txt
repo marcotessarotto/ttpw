@@ -9,7 +9,7 @@ Python wrapper for TreeTagger
 :organization: CNRS - LIMSI
 :copyright: CNRS - 2004-2015
 :license: GNU-GPL Version 3 or greater
-:version: 2.2.2
+:version: 2.2.3
 
 
 `Module documentation <http://treetaggerwrapper.readthedocs.org/>`_
