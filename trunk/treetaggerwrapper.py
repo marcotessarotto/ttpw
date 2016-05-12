@@ -1196,7 +1196,7 @@ class TreeTagger(object):
             logger.info("Started TreeTagger from command: %r", tagcmdlist)
         except:
             logger.error("Failure to start TreeTagger with: %r", \
-                         tagcmd, exc_info=True)
+                         tagcmdlist, exc_info=True)
             raise
 
     # --------------------------------------------------------------------------
