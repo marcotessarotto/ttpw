@@ -24,11 +24,11 @@ SGML_tag = r"""
 SGML_tag_re = re.compile(SGML_tag, re.IGNORECASE | re.VERBOSE | re.DOTALL)
 
 
-s = """   <toto:Animal gate:gateId='80' Animal="Reptile"  >
+s = """   <toto:Animal gate:gate_Id='80' Animal.name="Reptile"  >
 Anaconda
 </Animal> <toto />
 </truc>
-<blaise:chose truc:machin="essai" blob:xxx="34"  bold=true  />Rien a faire"""
+<blaise:chose truc:mach-in="essai" blob.ref:xxx="34"  bold=true  />Rien a faire"""
 
 
 lst = SGML_tag_re.split(s)
