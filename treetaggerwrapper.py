@@ -8,7 +8,7 @@ About treetaggerwrapper
 :organization: CNRS - LIMSI
 :copyright: CNRS - 2004-2016
 :license: GNU-GPL Version 3 or greater
-:version: 2.2.3
+:version: 2.2.4
 
 For language independent part-of-speech tagger TreeTagger, 
 see `Helmut Schmid TreeTagger site`_.
@@ -1786,20 +1786,21 @@ def build_with_callable(parts, fct, *args):
 
 
 # ==============================================================================
-# XML element names syntax (including xml namespace):
-SGML_name = r"(?:[a-z][-_.a-z0-9]*)(?::[a-z][-_.a-z0-9]*)?"
+# XML element/attributes names syntax (including xml namespace):
+SGML_name = r"""(?:[a-z][-_.a-z0-9]*(?::[-_.a-z0-9]*)?)"""
+
+# XML attribute in an element tag (allow non-quoted value for bad html...)
+SGML_att = SGML_name + r"""\s*=\s*(?:(?:"[^>"]*")|(?:'[^>']*')|(?:[^\s]+))"""
 
 # XML tags (as group, with parenthesis !!!).
 SGML_tag = r"""
     (
-        (?:<!-- .*? -->)                # XML/SGML comment
-            |                           # -- OR --
+        (?:<!-- .*? -->)                   # XML/SGML comment
+            |                              # -- OR --
         (?:
-        <[!?/]?""" + SGML_name + """    # Start of tag/directive
-            (?:\b[^>]*>)                # +Process all up to the first >,
-                                        # but separated from element name
-               |
-            >                           # +End of tag/directive
+        <[!?/]?""" + SGML_name + r"""      # Start of tag/directive
+            (?:\s+""" +SGML_att + r""")*   # [attributes]
+         \s*[/?]?>                         # End of tag/directive - maybe autoclosed
         )
     )"""
 SGML_tag_re = re.compile(SGML_tag, re.IGNORECASE | re.VERBOSE | re.DOTALL)

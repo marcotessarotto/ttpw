@@ -1,3 +1,6 @@
+2016-09-06
+Fix in SGML/XML tags regular expressions.
+
 2016-05-12
 Fix in _start_process() exception processing, documentation update.
 
