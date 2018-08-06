@@ -685,7 +685,7 @@ punct2find_subst = "\\1 \\2"
 #acronymexpr_re = re.compile("^[a-zA-Z]+(\.[a-zA-Z])+\.?$",
 # Change regexp to math any Unicode alphabetic (and allow diacritic marks
 # on the acronym).
-acronymexpr_re = re.compile(r"^[^\W\d_]+(\.[^\W\d_])+\.?$",
+acronymexpr_re = re.compile(r"^[^\W\d_-]+(\.[^\W\d_-])+\.?$",
                             re.IGNORECASE | re.VERBOSE | re.UNICODE)
 
 
