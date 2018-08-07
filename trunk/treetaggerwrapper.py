@@ -15,14 +15,21 @@ see `Helmut Schmid TreeTagger site`_.
 
 .. _Helmut Schmid TreeTagger site: http://www.ims.uni-stuttgart.de/projekte/corplex/TreeTagger/DecisionTreeTagger.html
 
-For this module, see `Developer Project page`_ and `Project Source repository`_
+For this module, see `Developer Project page`_ and `Project Source repository`_ 
+on french academic repository SourceSup. And `Module Documentation`_ on Read The Docs.
 
 .. _Developer  Project page: https://perso.limsi.fr/pointal/dev:treetaggerwrapper
 .. _Project Source repository: https://sourcesup.renater.fr/projects/ttpw/
+.. _Module Documentation: https://treetaggerwrapper.readthedocs.io/en/latest/
 
 You can also retrieve the latest version of this module with the svn command::
 
-      svn export https://subversion.renater.fr/ttpw/trunk/treetaggerwrapper.py
+    svn export https://subversion.renater.fr/ttpw/trunk/treetaggerwrapper.py
+
+Or install it (and the module treetaggerpoll.py) using pip (add pip install option 
+:option:`--user` for user private installation)::
+
+    pip install treetaggerwrapper
 
 This wrapper tool is intended to be used in projects where multiple
 chunk of texts must be processed via TreeTagger in an automatic
