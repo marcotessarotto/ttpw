@@ -340,8 +340,8 @@ to separate directories with this notation).
 .. _Naming Files, Paths, and Namespaces: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247.aspx
 
 
-TreeTagger automatic locate
----------------------------
+TreeTagger automatic location
+-----------------------------
 
 For your TreeTagger to be automatically find by the script, its **directory**
 must follow installation rules below:
@@ -396,6 +396,34 @@ to global (system wide installation).
    - :file:`/Applications`,
    - :file:`/Applications/bin`,
    - :file:`/Library/Frameworks`.
+
+TreeTagger probabilities
+------------------------
+
+Using :option:`TAGOPT` parameter when constructing :class:`TreeTagger` object,
+you can provide :option:`-threshold` and :option:`-prob` parameters
+to the treetagger process, and then retrieve probability informations
+in the tagger output (see TreeTagger README file for all options).
+
+    >>> import treetaggerwrapper as ttpw
+    >>> tagger = ttpw.TreeTagger(TAGLANG='fr', TAGOPT="-prob -threshold 0.7 -token -lemma -sgml -quiet")
+    >>> tags = tagger.tag_text('Voici un petit test de TreeTagger pour voir.')
+    >>> import pprint
+    >>> pprint.pprint(tags)
+    ['Voici\tADV voici 1.000000',
+    'un\tDET:ART un 0.995819',
+    'petit\tADJ petit 0.996668',
+    'test\tNOM test 1.000000',
+    'de\tPRP de 1.000000',
+    'TreeTagger\tNAM <unknown> 0.966699',
+    'pour\tPRP pour 0.663202',
+    'voir\tVER:infi voir 1.000000',
+    '.\tSENT . 1.000000']
+
+.. note::
+
+    This provides extra data for each token, your script must be adapted for this 
+    (you can note in the pprint formated display that we have tab and space separators).
 
 """
 
@@ -892,7 +920,10 @@ class TreeTagger(object):
         :keyword  TAGDIR: path to TreeTagger installation directory.
         :type   TAGDIR: string
         :keyword  TAGOPT: options for TreeTagger
-                          (default to '-token -lemma -sgml -quiet').
+                          (default to '-token -lemma -sgml -quiet', it is
+                          recomanded to **keep these default options** for 
+                          correct use of this tool, and add other options on
+                          your need).
         :type   TAGOPT: string
         :keyword  TAGPARFILE: parameter file for TreeTagger.
                               (default available for supported languages).
