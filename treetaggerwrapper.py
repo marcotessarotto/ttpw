@@ -6,9 +6,9 @@ About treetaggerwrapper
 
 :author: Laurent Pointal <laurent.pointal@limsi.fr> <laurent.pointal@laposte.net>
 :organization: CNRS - LIMSI
-:copyright: CNRS - 2004-2016
+:copyright: CNRS - 2004-2018
 :license: GNU-GPL Version 3 or greater
-:version: 2.2.4
+:version: 2.2.5
 
 For language independent part-of-speech tagger TreeTagger, 
 see `Helmut Schmid TreeTagger site`_.
@@ -407,7 +407,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.2.3'
+__version__ = '2.2.5'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
@@ -567,7 +567,7 @@ g_langsupport = {
         "pclictic": "",
         "fclictic": "'(s|re|ve|d|m|em|ll)|n't",
         "number": NUMBER_EXPRESSION,
-        "dummysentence": "This is a dummy sentence to ensure data push .",
+        "dummysentence": "This is a dummy sentence to ensure data push . .",
         "replurlexp": 'replaced-url',
         "replemailexp": 'replaced-email',
         "replipexp": 'replaced-ip',
@@ -585,7 +585,7 @@ g_langsupport = {
                     "-vous|-en|-y|-ci|-là|-la",
         "number": NUMBER_EXPRESSION,
         "dummysentence": "Cela est une phrase inutile pour assurer la "
-                         "transmission des données .",
+                         "transmission des données . .",
         "replurlexp": 'url-remplacée',
         "replemailexp": 'email-remplacé',
         "replipexp": 'ip-remplacée>',
@@ -601,7 +601,7 @@ g_langsupport = {
         "fclictic": "'(s|re|ve|d|m|em|ll)|n't",
         "number": NUMBER_EXPRESSION,
         "dummysentence": "Das ist ein Testsatz um das Stossen der "
-                         "daten sicherzustellen .",
+                         "daten sicherzustellen . .",
         "replurlexp": 'replaced-url',
         "replemailexp": 'replaced-email',
         "replipexp": 'replaced-ip',
@@ -617,7 +617,7 @@ g_langsupport = {
         "fclictic": "",
         "number": NUMBER_EXPRESSION,
         "dummysentence": "Quiero darle las gracias a usted y explicar un "
-                         "malentendido .",
+                         "malentendido . .",
         "replurlexp": 'sustituir-url>',
         "replemailexp": 'sustituir-email',
         "replipexp": 'sustituir-ip',
@@ -649,18 +649,18 @@ for name, lang in [
         ls['abbrevfile'] = name + '-abbreviations-utf8'
 # "C'est la fin ." (+google translate…) - in case someone tries to use
 # the module for chunking an officially unsupport language.
-g_langsupport['bg']['dummysentence'] = 'Това е края .'
-g_langsupport['nl']['dummysentence'] = 'Dit is het einde .'
-g_langsupport['et']['dummysentence'] = 'See on lõpuks .'
-g_langsupport['fi']['dummysentence'] = 'Tämä on loppu .'
-g_langsupport['gl']['dummysentence'] = 'Este é o final .'
-g_langsupport['it']['dummysentence'] = 'Questa è la fine .'
-g_langsupport['la']['dummysentence'] = 'Hoc est finis .'
-g_langsupport['mn']['dummysentence'] = 'Энэ нь эцсийн байна .'
-g_langsupport['pl']['dummysentence'] = 'To jest koniec .'
-g_langsupport['ru']['dummysentence'] = 'Это конец .'
-g_langsupport['sk']['dummysentence'] = 'To je koniec .'
-g_langsupport['sw']['dummysentence'] = 'Hii ni mwisho .'
+g_langsupport['bg']['dummysentence'] = 'Това е края . .'
+g_langsupport['nl']['dummysentence'] = 'Dit is het einde . .'
+g_langsupport['et']['dummysentence'] = 'See on lõpuks . .'
+g_langsupport['fi']['dummysentence'] = 'Tämä on loppu . .'
+g_langsupport['gl']['dummysentence'] = 'Este é o final . .'
+g_langsupport['it']['dummysentence'] = 'Questa è la fine . .'
+g_langsupport['la']['dummysentence'] = 'Hoc est finis . .'
+g_langsupport['mn']['dummysentence'] = 'Энэ нь эцсийн байна . .'
+g_langsupport['pl']['dummysentence'] = 'To jest koniec . .'
+g_langsupport['ru']['dummysentence'] = 'Это конец . .'
+g_langsupport['sk']['dummysentence'] = 'To je koniec . .'
+g_langsupport['sw']['dummysentence'] = 'Hii ni mwisho . .'
 
 g_langsupport['it']['pclictic'] = "[dD][ae]ll'|[nN]ell'|[Aa]ll'|[lLDd]'|[Ss]ull'|" \
                                   "[Qq]uest'|[Uu]n'|[Ss]enz'|[Tt]utt'"
