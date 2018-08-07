@@ -426,6 +426,17 @@ in the tagger output (see TreeTagger README file for all options).
     'pour\tPRP pour 0.663202',
     'voir\tVER:infi voir 1.000000',
     '.\tSENT . 1.000000']
+    >>> tags2 = ttpw.make_tags(tags, allow_extra=True)
+    >>> pprint.pprint(tags2)
+    [Tag(word='Voici', pos='ADV', lemma='voici', extra=1.0),
+    Tag(word='un', pos='DET:ART', lemma='un', extra=0.995819),
+    Tag(word='petit', pos='ADJ', lemma='petit', extra=0.996668),
+    Tag(word='test', pos='NOM', lemma='test', extra=1.0),
+    Tag(word='de', pos='PRP', lemma='de', extra=1.0),
+    Tag(word='TreeTagger', pos='NAM', lemma='<unknown>', extra=0.966699),
+    Tag(word='pour', pos='PRP', lemma='pour', extra=0.663202),
+    Tag(word='voir', pos='VER:infi', lemma='voir', extra=1.0),
+    Tag(word='.', pos='SENT', lemma='.', extra=1.0)]
 
 .. note::
 
@@ -736,6 +747,12 @@ Tag = collections.namedtuple("Tag", "word pos lemma")
 """
 A named tuple build by :func:`make_tags` to process :meth:`TreeTagger.tag_text`
 output and get fields with meaning.
+"""
+
+TagExtra = collections.namedtuple("Tag", "word pos lemma extra")
+"""
+A named tuple build by :func:`make_tags` to process :meth:`TreeTagger.tag_text`
+output and get fields with meaning when there are extra informations.
 """
 
 NotTag = collections.namedtuple("NotTag", "what")
@@ -2346,18 +2363,36 @@ def get_param(paramname, paramsdict, defaultvalue):
 
 
 # ==============================================================================
-def make_tags(result, exclude_nottags=False):
+def make_tags(result, exclude_nottags=False, allow_extra=False):
     """Tool function to transform list of TreeTagger tabbed text output strings 
-    into :class:`Tag` (and :class:`NotTag`) list.
+    into :class:`Tag`/:class:`TagExtra` (and :class:`NotTag`) list.
     
-    You call this function using the result of a :meth:`TreeTagger.tag_text` call.
+    You call this function using the result of a :meth:`TreeTagger.tag_text`
+    call.
+    
+    :param result: result of a :meth:`TreeTagger.tag_text` call.
+    :param bool exclude_nottags: dont generate :class:`NotTag` for wrong size 
+        outputs. Default to False.
+    :param bool allow_extra: build a :class:`TagExtra` for outputs longer than
+        expected — numeric values when present will be converted to float
+        Default to False.
     """
     newres = []
     fldscount = len(Tag._fields)
     for line in result:
-        items = line.split("\t")
+        items = line.split()
         if len(items) != fldscount:
-            if not exclude_nottags:
+            if len(items) > fldscount and allow_extra:
+                extra = list(items[fldscount:])
+                for i, e in enumerate(extra):
+                    try:
+                        extra[i] = float(extra[i])
+                    except:
+                        pass
+                if len(extra) == 1:
+                    extra = extra[0]
+                newres.append(TagExtra(items[0], items[1], items[2], extra))
+            elif not exclude_nottags:
                 newres.append(NotTag(line, ))
         else:
             newres.append(Tag(*items))
