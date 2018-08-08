@@ -8,7 +8,7 @@ About treetaggerwrapper
 :organization: CNRS - LIMSI
 :copyright: CNRS - 2004-2018
 :license: GNU-GPL Version 3 or greater
-:version: 2.2.5
+:version: 2.2.6
 
 For language independent part-of-speech tagger TreeTagger, 
 see `Helmut Schmid TreeTagger site`_.
@@ -40,7 +40,7 @@ an external command).
 
    See `Important modifications notes`_ below !
 
-   If you use this wrapper, a small email would be wellcome to support
+   If you use this wrapper, a small email would be welcome to support
    module maintenance (where, purpose, funding…).
    Send it to laurent.pointal@limsi.fr
 
@@ -82,7 +82,7 @@ Manual
 ------
 
 For a complete manual installation, install :mod:`six` module and other
-dependancies, and simply put the :file:`treetaggerwrapper.py`
+dependencies, and simply put the :file:`treetaggerwrapper.py`
 and :file:`treetaggerpoll.py` files in a
 directory listed in the Python path (or in your scripts directory).
 
@@ -143,8 +143,9 @@ need to use explicit notation ``u"string"``, of if within a script start by a
     >>> # Note: in output strings, fields are separated with tab chars (\t).
 
 
-You can transform it into a list of named tuple :class:`Tag` 
-(and possible :class:`NotTag` for unknown tokens) using the helper 
+You can transform it into a list of named tuples ``Tag``, ``NotTag``
+(unknown tokens) ``TagExtra`` (token having extra informations requested
+via tagger options - like probabilistic indications) using the helper
 :func:`make_tags` function::
 
     >>> tags2 = treetaggerwrapper.make_tags(tags)
@@ -185,7 +186,7 @@ modifications imply modifications in users code.
   with underscore separator between words.
   Typically for users, ``tt.TagText()`` becomes ``tt.tag_text()``
   (for this method a compatibility method has been written, but
-  no longer support lists of non-unicode strings).
+  no longer support lists of non-Unicode strings).
 
 - Work with Python2 and Python3, with same code.
 
@@ -204,25 +205,29 @@ modifications imply modifications in users code.
 - Default to **utf-8** when reading *user files* (you need to specify latin1
   if you use such encoding - previously it was the default).
 
-- **Guess TreeTagger location** — you can still provide :envvar:`TAGDIR` as env var
-  or as :class:`TreeTagger` parameter, but it's no more necessary.
+- **Guess TreeTagger location** — you can still provide :envvar:`TAGDIR` as
+  environment variable or as :class:`TreeTagger` parameter,
+  but it's no more necessary.
   Found directory is cached in :file:`treetagger_wrapper.cfg` configuration
   file to only guess once.
 
 - Documentation has been revised to only export main things for module usage;
   internals stay documented via comments in the source.
 
-- **Text chunking** has been revisited and must be more efficient.
+- **Text chunking** (tokenizing to provide treetagger input)
+  has been revisited and must be more efficient.
   And you can now also provide your own external chunking function when
-  creating the wrapper — which will replace internal chuning in the whole
+  creating the wrapper — which will replace internal chunking in the whole
   process.
 
-- XML tags generated have been modified (made shorted and with ``ttpw:`` namespace).
+- XML tags generated have been modified (made shorted and with ``ttpw:``
+  namespace).
 
 - Can be used in **multithreading** context (pipe communications with TreeTagger
   are protected by a Lock, preventing concurrent access).
-  If you need multiple parallel processing, you can create multiple :class:`TreeTagger`
-  objects, put them in a poll, and work with them from different threads.
+  If you need multiple parallel processing, you can create multiple
+  :class:`TreeTagger` objects, put them in a poll, and work with them
+  from different threads.
 
 - Support polls of taggers for optimal usage on multi-core computers.
   See :class:`treetaggerwrapper.TaggerPoll` class for thread poll
@@ -234,14 +239,14 @@ Processing
 This module does two main things
 --------------------------------
 
-- Manage preprocessing of text (chunking) in place of external Perl scripts as in
-  base TreeTagger installation, thus avoid starting Perl each time a piece
-  of text must be tagged.
+- Manage preprocessing of text (chunking to extract tokens for treetagger
+  input) in place of external Perl scripts as in base TreeTagger installation,
+  thus avoid starting Perl each time a piece of text must be tagged.
 
 - Keep alive a pipe connected to TreeTagger process, and use that pipe
   to send data and retrieve tags, thus avoid starting TreeTagger each
   time and avoid writing / reading temporary files on disk (direct
-  communication via the pipe).
+  communication via the pipe). Ensure flushing of tagger output.
 
 Supported languages
 ^^^^^^^^^^^^^^^^^^^
@@ -428,20 +433,21 @@ in the tagger output (see TreeTagger README file for all options).
     '.\tSENT . 1.000000']
     >>> tags2 = ttpw.make_tags(tags, allow_extra=True)
     >>> pprint.pprint(tags2)
-    [Tag(word='Voici', pos='ADV', lemma='voici', extra=1.0),
-    Tag(word='un', pos='DET:ART', lemma='un', extra=0.995819),
-    Tag(word='petit', pos='ADJ', lemma='petit', extra=0.996668),
-    Tag(word='test', pos='NOM', lemma='test', extra=1.0),
-    Tag(word='de', pos='PRP', lemma='de', extra=1.0),
-    Tag(word='TreeTagger', pos='NAM', lemma='<unknown>', extra=0.966699),
-    Tag(word='pour', pos='PRP', lemma='pour', extra=0.663202),
-    Tag(word='voir', pos='VER:infi', lemma='voir', extra=1.0),
-    Tag(word='.', pos='SENT', lemma='.', extra=1.0)]
+    [TagExtra(word='Voici', pos='ADV', lemma='voici', extra=(1.0,)),
+    TagExtra(word='un', pos='DET:ART', lemma='un', extra=(0.995819,)),
+    TagExtra(word='petit', pos='ADJ', lemma='petit', extra=(0.996668,)),
+    TagExtra(word='test', pos='NOM', lemma='test', extra=(1.0,)),
+    TagExtra(word='de', pos='PRP', lemma='de', extra=(1.0,)),
+    TagExtra(word='TreeTagger', pos='NAM', lemma='<unknown>', extra=(0.966699,)),
+    TagExtra(word='pour', pos='PRP', lemma='pour', extra=(0.663202,)),
+    TagExtra(word='voir', pos='VER:infi', lemma='voir', extra=(1.0,)),
+    TagExtra(word='.', pos='SENT', lemma='.', extra=(1.0,))]
 
 .. note::
 
-    This provides extra data for each token, your script must be adapted for this 
-    (you can note in the pprint formated display that we have tab and space separators).
+    This provides extra data for each token, your script must be adapted for
+    this (you can note in the pprint formated display that we have tab and
+    space separators — a tab after the word, then spaces between items).
 
 """
 
@@ -453,7 +459,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.2.5'
+__version__ = '2.2.6'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
@@ -749,7 +755,7 @@ A named tuple build by :func:`make_tags` to process :meth:`TreeTagger.tag_text`
 output and get fields with meaning.
 """
 
-TagExtra = collections.namedtuple("Tag", "word pos lemma extra")
+TagExtra = collections.namedtuple("TagExtra", "word pos lemma extra")
 """
 A named tuple build by :func:`make_tags` to process :meth:`TreeTagger.tag_text`
 output and get fields with meaning when there are extra informations.
@@ -1296,7 +1302,7 @@ class TreeTagger(object):
                  prepronly=False, tagblanks=False, notagurl=False,
                  notagemail=False, notagip=False, notagdns=False,
                  nosgmlsplit=False):
-        """Tag a text and return corresponding lines.
+        """Tag a text and returns corresponding lines.
 
         This is normally the method you use on this class. Other methods
         are only helpers of this one.
@@ -1315,7 +1321,7 @@ class TreeTagger(object):
                          of one token by line (either as a collection of 
                          line-feed separated lines in one string, or as a list 
                          of lines).
-        :type   tagonly: boolesn
+        :type   tagonly: boolean
         :param  prepronly: indicator to only do preprocessing of text without
                            tagging (default to False).
         :type   prepronly: boolean
@@ -1337,6 +1343,9 @@ class TreeTagger(object):
                           the text (default to False).
         :type   nosgmlsplit: boolean
         :return: List of output strings from the tagger.
+                        You may use :func:`make_tags` function to build
+                        a corresponding list of named tuple, for
+                        further processing readbility.
         :rtype:  [ str ]
         """
         logger.debug("tag_text with option: numlines=%d, tagonly=%d, "
@@ -2364,38 +2373,55 @@ def get_param(paramname, paramsdict, defaultvalue):
 
 # ==============================================================================
 def make_tags(result, exclude_nottags=False, allow_extra=False):
-    """Tool function to transform list of TreeTagger tabbed text output strings 
-    into :class:`Tag`/:class:`TagExtra` (and :class:`NotTag`) list.
+    """Tool function to transform a list of TreeTagger tabbed text output strings
+    into a list of ``Tag``/``TagExtra``/``NotTag`` named tuples.
     
     You call this function using the result of a :meth:`TreeTagger.tag_text`
-    call.
+    call. ``Tag`` and ``TagExtra`` have attributes ``word``, ``pos`` and
+    ``lemma``.
+    ``TagExtra`` has an ``extra`` attribute containing a tuple of tagger's
+    output complement values (where numeric values are converted to float).
+    ``NotTag`` has a simple attribute ``what``.
     
     :param result: result of a :meth:`TreeTagger.tag_text` call.
-    :param bool exclude_nottags: dont generate :class:`NotTag` for wrong size 
+    :param bool exclude_nottags: dont generate ``NotTag`` for wrong size
         outputs. Default to False.
-    :param bool allow_extra: build a :class:`TagExtra` for outputs longer than
-        expected — numeric values when present will be converted to float
-        Default to False.
+    :param bool allow_extra: build a ``TagExtra`` for outputs longer than
+        expected. Default to False.
     """
     newres = []
-    fldscount = len(Tag._fields)
     for line in result:
-        items = line.split()
-        if len(items) != fldscount:
-            if len(items) > fldscount and allow_extra:
-                extra = list(items[fldscount:])
+        word = pos = lemma = extra = None
+        # Separator may vary when using options to request probabilistic
+        # informations. We are sure to have a tab to separate the word
+        # from remaining of line (and the word may contain a space).
+        # For the remaining of line, separator can be tab or space, but
+        # items may not contain space.
+        items = line.split('\t', 1)
+        if len(items) == 2:
+            word = items[0]
+            items = items[1].split()
+            if len(items) >= 2:
+                pos = items[0]
+                lemma = items[1]
+            if len(items) >= 3:
+                extra = items[2:]
                 for i, e in enumerate(extra):
                     try:
-                        extra[i] = float(extra[i])
+                        extra[i] = float(e)
                     except:
                         pass
-                if len(extra) == 1:
-                    extra = extra[0]
-                newres.append(TagExtra(items[0], items[1], items[2], extra))
+                extra = tuple(extra)
+        # Built result object upon extracted informations.
+        if extra is not None:
+            if allow_extra:
+                newres.append(TagExtra(word, pos, lemma, extra))
             elif not exclude_nottags:
                 newres.append(NotTag(line, ))
-        else:
-            newres.append(Tag(*items))
+        elif word is not None and pos is not None and lemma is not None:
+            newres.append(Tag(word, pos, lemma))
+        elif not exclude_nottags:
+            newres.append(NotTag(line, ))
     return newres
 
 

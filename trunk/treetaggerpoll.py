@@ -19,7 +19,10 @@ A comparison using the following example, running on a Linux OS with 4 core
 Intel Xeon X5450 CPU,
 tested with 1  2 3 4 5 and 10 worker process, gives the result in table below —
 printed time is for the main process (which wait for its subprocess termination).
-This shows great usage of available CPU when using this module for chunking/tagging:
+This shows great usage of available CPU when using this module for
+chunking/tagging (we can that having more worker process than CPU is not
+interesting — by default the class build as many worker process as you have
+CPUs):
 
 ..  list-table:: Workers count comparison
     :header-rows: 1
