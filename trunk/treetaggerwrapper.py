@@ -8,7 +8,7 @@ About treetaggerwrapper
 :organization: CNRS - LIMSI
 :copyright: CNRS - 2004-2018
 :license: GNU-GPL Version 3 or greater
-:version: 2.2.6
+:version: 2.2.7
 
 For language independent part-of-speech tagger TreeTagger, 
 see `Helmut Schmid TreeTagger site`_.
@@ -271,6 +271,7 @@ It can be used for tagging only for languages:
 - finnish (fi)
 - galician (gl)
 - italian (it)
+- korean (kr)
 - latin (la)
 - mongolian (mn)
 - polish (pl)
@@ -459,7 +460,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.2.6'
+__version__ = '2.2.7'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
@@ -685,6 +686,7 @@ for name, lang in [
     ('finnish', 'fi'),
     ('galician', 'gl'),
     ('italian', 'it'),
+    ('korean', 'kr'),
     ('latin', 'la'),
     ('mongolian', 'mn'),
     ('polish', 'pl'),
@@ -707,6 +709,7 @@ g_langsupport['et']['dummysentence'] = 'See on lõpuks . .'
 g_langsupport['fi']['dummysentence'] = 'Tämä on loppu . .'
 g_langsupport['gl']['dummysentence'] = 'Este é o final . .'
 g_langsupport['it']['dummysentence'] = 'Questa è la fine . .'
+g_langsupport['kr']['dummysentence'] = '끝 이 야 . .'
 g_langsupport['la']['dummysentence'] = 'Hoc est finis . .'
 g_langsupport['mn']['dummysentence'] = 'Энэ нь эцсийн байна . .'
 g_langsupport['pl']['dummysentence'] = 'To jest koniec . .'
