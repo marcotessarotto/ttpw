@@ -256,7 +256,7 @@ Supported languages
    When specifying language with treetaggerwrapper, we use the the two
    chars language codes, not the complete language name.
 
-This module support chunking + tagging for languages:
+This module support chunking (tokenizing) + tagging for languages:
 
 - spanish (es)
 - french (fr)
