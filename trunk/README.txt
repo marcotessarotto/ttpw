@@ -7,9 +7,9 @@ Python wrapper for TreeTagger
 
 :author: Laurent Pointal <laurent.pointal@limsi.fr> <laurent.pointal@laposte.net>
 :organization: CNRS - LIMSI
-:copyright: CNRS - 2004-2018
+:copyright: CNRS - 2004-2019
 :license: GNU-GPL Version 3 or greater
-:version: 2.2.7
+:version: 2.3
 
 
 - `Module documentation <http://treetaggerwrapper.readthedocs.org/>`_
