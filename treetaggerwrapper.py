@@ -6,9 +6,9 @@ About treetaggerwrapper
 
 :author: Laurent Pointal <laurent.pointal@limsi.fr> <laurent.pointal@laposte.net>
 :organization: CNRS - LIMSI
-:copyright: CNRS - 2004-2018
+:copyright: CNRS - 2004-2019
 :license: GNU-GPL Version 3 or greater
-:version: 2.2.7
+:version: 2.3
 
 For language independent part-of-speech tagger TreeTagger, 
 see `Helmut Schmid TreeTagger site`_.
@@ -36,9 +36,13 @@ chunk of texts must be processed via TreeTagger in an automatic
 way (else you may simply use the base TreeTagger installation once as
 an external command).
 
-.. warning:: Incompatible module evolutions with version 2.0 on august 20 2015
+.. warning:: Parameter files renaming.
 
-   See `Important modifications notes`_ below !
+   Latest distributed files on TreeTagger site removed :code:`-utf8` part from
+   parameter files names. 
+   This version 2.3 ot the wrapper tries to adapt to your installed version
+   of TreeTagger: test existence of :code:`.par` file without :code:`-utf8` part, and if it
+   failed, test existence of file with adding :code:`-utf8` part.
 
    If you use this wrapper, a small email would be welcome to support
    module maintenance (where, purpose, funding…).
@@ -460,7 +464,7 @@ from __future__ import unicode_literals
 # Note that use of sphinx 1.3 :any: role may broke epydoc (not tested).
 __docformat__ = "restructuredtext en"
 
-__version__ = '2.2.7'
+__version__ = '2.3'
 
 # Note: I use re.VERBOSE option everywhere to allow spaces and comments into
 #       regular expressions (more readable). And (?:...) allow to have
@@ -613,7 +617,7 @@ g_langsupport = {
     },
     "en": {
         "encoding": "utf-8",
-        "tagparfile": "english-utf8.par",
+        "tagparfile": "english.par",
         "abbrevfile": "english-abbreviations",
         "pchar": ALONEMARKS + "'",
         "fchar": ALONEMARKS + "'",
@@ -628,7 +632,7 @@ g_langsupport = {
     },
     "fr": {
         "encoding": "utf-8",
-        "tagparfile": "french-utf8.par",
+        "tagparfile": "french.par",
         "abbrevfile": "french-abbreviations-utf8",
         "pchar": ALONEMARKS + "'",
         "fchar": ALONEMARKS + "'",
@@ -646,7 +650,7 @@ g_langsupport = {
     },
     "de": {
         "encoding": "utf-8",
-        "tagparfile": "german-utf8.par",
+        "tagparfile": "german.par",
         "abbrevfile": "german-abbreviations-utf8",
         "pchar": ALONEMARKS + "'",
         "fchar": ALONEMARKS + "'",
@@ -662,7 +666,7 @@ g_langsupport = {
     },
     "es": {
         "encoding": "utf-8",
-        "tagparfile": "spanish-utf8.par",
+        "tagparfile": "spanish.par",
         "abbrevfile": "spanish-abbreviations",
         "pchar": ALONEMARKS + "'",
         "fchar": ALONEMARKS + "'",
@@ -698,8 +702,8 @@ for name, lang in [
         ls['encoding'] = 'latin-1'
         ls['tagparfile'] = name + '.par'
         ls['abbrevfile'] = name + '-abbreviations'
-    else:
-        ls['tagparfile'] = name + '-utf8.par'
+    else:  # __base__ has 'encoding' utf8
+        ls['tagparfile'] = name + '.par'
         ls['abbrevfile'] = name + '-abbreviations-utf8'
 # "C'est la fin ." (+google translate…) - in case someone tries to use
 # the module for chunking an officially unsupport language.
@@ -1076,18 +1080,33 @@ class TreeTagger(object):
         # If it's directly a visible file, then use it, else try to locate
         # it in TreeTagger library directory.
         maybefile = os.path.abspath(self.tagparfile)
+        parfilefound = False
         if os.path.isfile(maybefile):
             self.tagparfile = maybefile
+            parfilefound = True
         else:
             maybefile = os.path.join(self.taglibdir, self.tagparfile)
             if os.path.isfile(maybefile):
                 self.tagparfile = maybefile
+                parfilefound = True
             else:
-                logger.error("TreeTagger parameter file invalid: %s",
-                             self.tagparfile)
-                raise TreeTaggerError("TreeTagger parameter file invalid: " + \
-                                      self.tagparfile)
-        logger.info("tagparfile=%s", self.tagparfile)
+                # As of version 2.3, tries with -utf8 parameter files.
+                if '-utf8' not in maybefile:
+                    name, ext = osp.splitext(maybefile)
+                    maybefile = name + '-utf8' + ext
+                    if os.path.isfile(maybefile):
+                        self.tagparfile = maybefile
+                        parfilefound = True
+                        logger.warning("tagparfile automatically replaced with utf8 version"
+                                        " - you may update your TreeTagger installation")
+        # Report error or trace
+        if not parfilefound:
+            logger.error("TreeTagger parameter file invalid: %s",
+                        self.tagparfile)
+            raise TreeTaggerError("TreeTagger parameter file invalid: " + \
+                                self.tagparfile)
+        else:
+            logger.info("tagparfile=%s", self.tagparfile)
 
         # ----- Store encoding/decoding parameters.
         enc = get_param("TAGINENC", kargs, self.langsupport['encoding'])
